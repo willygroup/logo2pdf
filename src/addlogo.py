@@ -26,7 +26,7 @@ def create_watermark(input_pdf, output, watermark):
     with open(output, 'wb') as out:
         pdf_writer.write(out)
 
-def createDirectories():
+def create_directories():
     if not os.path.exists('files'):
         os.makedirs('files')
     if not os.path.exists('files/nologo'):
@@ -41,55 +41,62 @@ def createDirectories():
         log('logo.pdf is not a valid pdf file! mimetype: '+kind.mime)
         sys.exit(1)
 
-if __name__ == '__main__':
+def process_folder():
 
-    # create directories 
-    createDirectories()
-
-    n_files = 0
-    if len(sys.argv) == 1:
-        try:
-            for f in os.listdir("files/nologo"):
-                if f.endswith(".pdf"):
-                    log(os.path.join("files/nologo", f))
-                    log(os.path.join("files/logo", f))
-                    o_filename = os.path.join("files/nologo", f)
-                    n_filename = os.path.join("files/logo", f)
-                    
-                    create_watermark(
-                        input_pdf=o_filename, 
-                        output=n_filename,
-                        watermark='files/logo.pdf'
-                    )
-            
-                    os.remove(o_filename)
-                    n_files=n_files+1
-
-        except:
-            log("An exception occurred ")
-            sys.exit(1)
-
-        if n_files > 0:
-            log("%d files processed" % n_files)
-        else:
-            log("No file processed")
-    elif len(sys.argv) > 1:
-        print (sys.argv)
-        print (type(sys.argv))
-        files = sys.argv
-        files.remove(files[0])
-        print (files )
-        for f in files:
+    try:
+        n_files = 0
+        for f in os.listdir("files/nologo"):
             if f.endswith(".pdf"):
-                log(os.path.join("./", f))
-                o_filename = os.path.join("./", f)
+                log(os.path.join("files/nologo", f))
+                log(os.path.join("files/logo", f))
+                o_filename = os.path.join("files/nologo", f)
                 n_filename = os.path.join("files/logo", f)
-
+                
                 create_watermark(
                     input_pdf=o_filename, 
                     output=n_filename,
                     watermark='files/logo.pdf'
-                    )
+                )
+        
+                os.remove(o_filename)
                 n_files=n_files+1
+    except:
+        log("An exception occurred ")
+        sys.exit(1)
+    return n_files
+
+def process_file_list(files):
+    n_files = 0
+    for f in files:
+        if f.endswith(".pdf"):
+            log(os.path.join("./", f))
+            o_filename = os.path.join("./", f)
+            n_filename = os.path.join("files/logo", f)
+
+            create_watermark(
+                input_pdf=o_filename, 
+                output=n_filename,
+                watermark='files/logo.pdf'
+                )
+            n_files=n_files+1
+    return n_files
+
+if __name__ == '__main__':
+    # create directories 
+    create_directories()
+    
+    if len(sys.argv) == 1:
+        # process folder
+        processed_files = process_folder()
+    elif len(sys.argv) > 1:
+        files = sys.argv
+        files.remove(files[0])
+        # list of pdf files
+        processed_files = process_file_list(files)
+    
+    if processed_files > 0:
+        log("%d files processed" % processed_files)
+    else:
+        log("No file processed")
 
 # cSpell:ignore nologo
