@@ -1,3 +1,13 @@
+# personal
+*.~lock*
+output/*
+tmp/*
+.linux_env/
+.win_env/
+dist/
+*.noseids
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
