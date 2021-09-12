@@ -9,70 +9,67 @@ from PyPDF2 import PdfFileWriter, PdfFileReader
 from modules.utils import log
 
 
-def process_folder(dirname):
-    """
-    Process all the pdf files in the nologo directory
-    """
-    try:
-        n_files = 0
+class PdfCreator:
+    def __init__(self, dirname):
+        self.dirname = dirname
+        self.logo_file = os.path.join(dirname, "files", "logo.pdf")
+        self.output_dir = os.path.join(self.dirname, "files", "logo")
+        self.input_dir = os.path.join(self.dirname, "files", "nologo")
+        self.file_list = []
+        self.from_directory = False
 
-        pdf_no_logo_directory = os.path.join(dirname, "files", "nologo")
-        logo_file = os.path.join(dirname, "files", "logo.pdf")
-
-        for file in os.listdir(pdf_no_logo_directory):
+    def read_directory_content(self):
+        for file in os.listdir(self.input_dir):
             if file.endswith(".pdf"):
-                log(os.path.join(dirname, "files", "nologo", file))
-                log(os.path.join(dirname, "files", "logo", file))
-                o_filename = os.path.join(dirname, "files", "nologo", file)
-                n_filename = os.path.join(dirname, "files", "logo", file)
+                self.file_list.append(os.path.join(self.input_dir, file))
+        self.from_directory = True
 
-                create_watermark(
-                    input_pdf=o_filename, output=n_filename, watermark=logo_file
+    def set_file_list(self, list):
+        for file in list:
+            if file.endswith(".pdf"):
+                self.file_list.append(file)
+
+    def process_files(self):
+        n_files = 0
+        for file in self.file_list:
+            if file.endswith(".pdf"):
+
+                input_file = file
+                filename = os.path.basename(file)
+                log("filename: " + filename)
+                output_file = "{0}_{2}.{1}".format(*filename.rsplit(".", 1), "logo")
+
+                output_file = os.path.join(self.output_dir, output_file)
+                self.create_watermark(
+                    input_pdf=input_file, output=output_file, watermark=self.logo_file
                 )
-
-                os.remove(o_filename)
+                # remove the file only if reading from nologo directory
+                if self.from_directory:
+                    os.remove(input_file)
                 n_files = n_files + 1
-    except FileExistsError():
-        log("The file does not exist ")
-        sys.exit(1)
-    # // TODO: add more exceptions
-    return n_files
+        return n_files
 
+    def create_watermark(self, input_pdf, output, watermark):
+        watermark_obj = PdfFileReader(watermark)
+        watermark_page = watermark_obj.getPage(0)
 
-def process_file_list(dirname, files):
-    """
-    Process a list of pdf files
-    """
-    logo_file = os.path.join(dirname, "files", "logo.pdf")
-    n_files = 0
-    for file in files:
-        if file.endswith(".pdf"):
-            log(os.path.join("./", file))
-            o_filename = os.path.join("./", file)
-            n_filename = os.path.join(dirname, "files/logo", file)
+        try:
+            log("input_pdf: " + input_pdf)
+            pdf_reader = PdfFileReader(input_pdf)
+            pdf_writer = PdfFileWriter()
+        except:
+            log("failed to initialize pdf_reader or writer")
+            sys.exit(1)
 
-            create_watermark(
-                input_pdf=o_filename, output=n_filename, watermark=logo_file
-            )
-            n_files = n_files + 1
-    return n_files
+        # Watermark all the pages
+        for page in range(pdf_reader.getNumPages()):
+            page = pdf_reader.getPage(page)
+            page.mergePage(watermark_page)
+            pdf_writer.addPage(page)
 
-
-def create_watermark(input_pdf, output, watermark):
-    """
-    Create the watermark
-    """
-    watermark_obj = PdfFileReader(watermark)
-    watermark_page = watermark_obj.getPage(0)
-
-    pdf_reader = PdfFileReader(input_pdf)
-    pdf_writer = PdfFileWriter()
-
-    # Watermark all the pages
-    for page in range(pdf_reader.getNumPages()):
-        page = pdf_reader.getPage(page)
-        page.mergePage(watermark_page)
-        pdf_writer.addPage(page)
-
-    with open(output, "wb") as out:
-        pdf_writer.write(out)
+        try:
+            with open(output, "wb") as out:
+                pdf_writer.write(out)
+        except:
+            log("Error writing to pdf output file")
+            sys.exit(1)

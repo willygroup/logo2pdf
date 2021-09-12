@@ -9,7 +9,7 @@ import os
 import sys
 
 from modules.utils import log
-from modules.pdf_creator import process_file_list, process_folder
+from modules.pdf_creator import PdfCreator
 
 
 if getattr(sys, "frozen", False):
@@ -24,14 +24,17 @@ else:
 if __name__ == "__main__":
     # create directories
 
+    pdf_creator = PdfCreator(dirname)
+
     if len(sys.argv) == 1:
         # process folder
-        PROCESSED_FILES = process_folder(dirname)
+        pdf_creator.read_directory_content()
     elif len(sys.argv) > 1:
         files = sys.argv
-        files.remove(files[0])
-        # list of pdf files
-        PROCESSED_FILES = process_file_list(dirname, files)
+        files.remove(files[0])  # removing the executable file name
+        pdf_creator.set_file_list(files)
+
+    PROCESSED_FILES = pdf_creator.process_files()
 
     if PROCESSED_FILES > 0:
         log("%d files processed" % PROCESSED_FILES)
