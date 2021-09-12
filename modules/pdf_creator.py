@@ -51,7 +51,6 @@ class PdfCreator:
         watermark_page = watermark_obj.getPage(0)
 
         try:
-            log("input_pdf: " + input_pdf)
             pdf_reader = PdfFileReader(input_pdf)
             pdf_writer = PdfFileWriter()
         except:

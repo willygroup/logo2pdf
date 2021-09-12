@@ -34,7 +34,7 @@ class TestPdfCreatorMethods(unittest.TestCase):
 
         expected = ["file1.pdf", "file3.pdf"]
 
-        self.assertEquals(expected, pdf_creator.file_list)
+        self.assertEqual(expected, pdf_creator.file_list)
 
         reset_environment(dirname)
 
@@ -55,7 +55,7 @@ class TestPdfCreatorMethods(unittest.TestCase):
             os.path.join(dirname, "tmp", "file3.pdf"),
         ]
 
-        self.assertEquals(expected, pdf_creator.file_list)
+        self.assertEqual(expected, pdf_creator.file_list)
 
         reset_environment(dirname)
 
