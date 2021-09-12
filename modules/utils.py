@@ -6,7 +6,7 @@ import sys
 import os
 import filetype
 
-# // TODO replace with a proper logging system
+# TODO replace with a proper logging system
 def log(msg):
     """
     Logging facility

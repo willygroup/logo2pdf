@@ -33,7 +33,6 @@ class PdfCreator:
         n_files = 0
         for file in self.file_list:
             if file.endswith(".pdf"):
-
                 input_file = file
                 filename = os.path.basename(file)
                 log("filename: " + filename)
@@ -43,9 +42,7 @@ class PdfCreator:
                 self.create_watermark(
                     input_pdf=input_file, output=output_file, watermark=self.logo_file
                 )
-                # remove the file only if reading from nologo directory
-                if self.from_directory:
-                    os.remove(input_file)
+
                 n_files = n_files + 1
         return n_files
 
@@ -73,3 +70,7 @@ class PdfCreator:
         except:
             log("Error writing to pdf output file")
             sys.exit(1)
+
+        # remove the file only if reading from nologo directory
+        if self.from_directory:
+            os.remove(input_pdf)
