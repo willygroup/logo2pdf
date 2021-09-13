@@ -11,18 +11,8 @@ import sys
 from modules.utils import log
 from modules.pdf_creator import PdfCreator
 
-
-if getattr(sys, "frozen", False):
-    # If the application is run as a bundle, the PyInstaller bootloader
-    # extends the sys module by a flag frozen=True and sets the app
-    # path into variable _MEIPASS'.
-    dirname = sys._MEIPASS  # pylint: disable=no-member
-else:
-    dirname = os.path.dirname(os.path.abspath(__file__))
-
-
 if __name__ == "__main__":
-    # create directories
+    dirname = os.path.dirname(os.path.abspath(__file__))
 
     pdf_creator = PdfCreator(dirname)
 
@@ -40,5 +30,3 @@ if __name__ == "__main__":
         log("%d files processed" % PROCESSED_FILES)
     else:
         log("No file processed")
-
-# cSpell:ignore nologo
