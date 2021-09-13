@@ -2,18 +2,22 @@
 Utilities module
 """
 
+from modules.pdf_creator import PdfCreator
 import sys
 import os
-import filetype
+import magic
 
-# TODO replace with a proper logging system
-def log(msg):
-    """
-    Logging facility
-    """
-    debug_trace = True
-    if debug_trace:
-        print(">>" + msg)
+
+def checks_valid_pdf(input_file) -> bool:
+    try:
+        mime = magic.Magic(mime=True)
+        mt = mime.from_file(input_file)
+    except:
+        return False
+    else:
+        if mt == "application/pdf":
+            return True
+    return False
 
 
 def create_environment(dirname):
@@ -21,16 +25,16 @@ def create_environment(dirname):
     Prepare the execution environment
     """
 
+    logo_file = os.path.join(dirname, "files", "logo.pdf")
     if not os.path.exists("files"):
         os.makedirs("files")
-    if not os.path.exists("files/nologo"):
-        os.makedirs("files/nologo")
-    if not os.path.exists("files/logo"):
-        os.makedirs("files/logo")
-    if not os.path.exists("files/logo.pdf"):
-        log("No files/logo.pdf file found!")
+    if not os.path.exists(os.path.join(dirname, "files", "nologo")):
+        os.makedirs(os.path.join(dirname, "files", "nologo"))
+    if not os.path.exists(os.path.join(dirname, "files", "logo")):
+        os.makedirs(os.path.join(dirname, "files", "logo"))
+    if not logo_file:
+        print("No files/logo.pdf file found!")
         sys.exit(1)
-    kind = filetype.guess(os.path.join(dirname, "files", "logo.pdf"))
-    if kind is None or kind.mime != "application/pdf":
-        log("logo.pdf is not a valid pdf file! mimetype: " + kind.mime)
+    if checks_valid_pdf(logo_file) != True:
+        print("logo.pdf is not a valid pdf file!")
         sys.exit(1)

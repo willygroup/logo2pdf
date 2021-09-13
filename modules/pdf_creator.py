@@ -8,8 +8,6 @@ import magic
 
 from PyPDF2 import PdfFileWriter, PdfFileReader
 
-from modules.utils import log
-
 
 class PdfCreator:
     def __init__(self, dirname):
@@ -37,7 +35,6 @@ class PdfCreator:
             if self.checks_valid_pdf(file):
                 input_file = file
                 filename = os.path.basename(file)
-                log("filename: " + filename)
                 output_file = "{0}_{2}.{1}".format(*filename.rsplit(".", 1), "logo")
 
                 output_file = os.path.join(self.output_dir, output_file)
@@ -56,7 +53,7 @@ class PdfCreator:
             pdf_reader = PdfFileReader(input_pdf)
             pdf_writer = PdfFileWriter()
         except:
-            log("failed to initialize pdf_reader or writer")
+            print("failed to initialize pdf_reader or writer")
             sys.exit(1)
 
         # Watermark all the pages
@@ -69,7 +66,7 @@ class PdfCreator:
             with open(output, "wb") as out:
                 pdf_writer.write(out)
         except:
-            log("Error writing to pdf output file")
+            print("Error writing to pdf output file")
             sys.exit(1)
 
         # remove the file only if reading from nologo directory

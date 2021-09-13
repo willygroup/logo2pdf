@@ -1,6 +1,5 @@
 import os
 import unittest
-import tempfile
 from pathlib import Path
 
 from tests.common import (
