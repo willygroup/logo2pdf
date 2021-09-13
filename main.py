@@ -5,6 +5,7 @@
 A script to add a watremark to a pdf file
 """
 
+from modules.utils import create_environment
 import os
 import sys
 
@@ -12,6 +13,8 @@ from modules.pdf_creator import PdfCreator
 
 if __name__ == "__main__":
     dirname = os.path.dirname(os.path.abspath(__file__))
+
+    create_environment(dirname)
 
     pdf_creator = PdfCreator(dirname)
 
