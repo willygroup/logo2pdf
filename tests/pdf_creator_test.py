@@ -1,41 +1,22 @@
 import os
-import shutil
 import unittest
 import tempfile
 from pathlib import Path
 
+from tests.common import (
+    create_directory,
+    create_file,
+    create_pdf_file,
+    dirname,
+    reset_environment,
+    set_environment,
+)
 from modules.pdf_creator import PdfCreator
-
-dirname = os.path.realpath(__file__).replace("pdf_creator_test.py", "")
-
-
-def create_file(filename):
-    with open(filename, "w") as f:
-        f.write("file: " + filename)
-
-
-def create_pdf_file(filename):
-    shutil.copyfile(os.path.join(dirname, "test_files", "nologo_file.pdf"), filename)
-
-
-def create_directory(pathname):
-    os.makedirs(pathname, exist_ok=True)
-
-
-def set_environment(dirname):
-    reset_environment(dirname)
-    create_directory(os.path.join(dirname, "tmp"))
-
-
-def reset_environment(dirname):
-    shutil.rmtree(os.path.join(dirname, "tmp"), ignore_errors=True)
 
 
 class TestPdfCreatorMethods(unittest.TestCase):
-
-    # TODO - Test  and process_files
-
     def test_init(self):
+
         pdf_creator = PdfCreator(dirname)
 
         self.assertEqual(
@@ -85,9 +66,8 @@ class TestPdfCreatorMethods(unittest.TestCase):
         input_pdf = os.path.join(dirname, "tmp", "nologo_file.pdf")
         output_pdf = os.path.join(dirname, "tmp", "logo_file.pdf")
         logo = os.path.join(dirname, "test_files", "logo.pdf")
-        shutil.copyfile(
-            os.path.join(dirname, "test_files", "nologo_file.pdf"), input_pdf
-        )
+
+        create_pdf_file(input_pdf)
 
         pdf_creator = PdfCreator(dirname)
         pdf_creator.from_directory = True
