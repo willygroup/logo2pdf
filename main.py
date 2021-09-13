@@ -8,7 +8,6 @@ A script to add a watremark to a pdf file
 import os
 import sys
 
-from modules.utils import log
 from modules.pdf_creator import PdfCreator
 
 if __name__ == "__main__":
@@ -27,6 +26,6 @@ if __name__ == "__main__":
     PROCESSED_FILES = pdf_creator.process_files()
 
     if PROCESSED_FILES > 0:
-        log("%d files processed" % PROCESSED_FILES)
+        print("%d files processed" % PROCESSED_FILES)
     else:
-        log("No file processed")
+        print("No file processed")

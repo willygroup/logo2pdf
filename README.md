@@ -1,6 +1,15 @@
 # addpdflogo-py
 Add logo to PDF files
 
+## Installation
+ - Create the python virtual environment with the command:
+   ```bash
+   $ source create_python_venv_linux.sh
+   ```
+ - Launch the script as:
+   ```bash
+   $ python main.py <file_list>
+   ```
 
 ## Usage
  - File list from directory:
