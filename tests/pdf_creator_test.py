@@ -125,6 +125,23 @@ class TestPdfCreatorMethods(unittest.TestCase):
 
         reset_environment(dirname)
 
+    def test_checks_valid_pdf(self):
+        set_environment(dirname)
+
+        file_1 = os.path.join(dirname, "tmp", "file1.pdf")
+        file_2 = os.path.join(dirname, "tmp", "file2.pxf")
+        file_3 = os.path.join(dirname, "tmp", "file3.pdf")
+
+        create_pdf_file(file_1)
+        create_pdf_file(file_2)
+        create_file(file_3)
+
+        self.assertTrue(PdfCreator.checks_valid_pdf(file_1))
+        self.assertTrue(PdfCreator.checks_valid_pdf(file_2))
+        self.assertFalse(PdfCreator.checks_valid_pdf(file_3))
+
+        reset_environment(dirname)
+
 
 if __name__ == "__main__":
     unittest.main()

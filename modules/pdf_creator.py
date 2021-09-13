@@ -4,6 +4,8 @@ Provides methods to create PDFs
 
 import os
 import sys
+import magic
+
 from PyPDF2 import PdfFileWriter, PdfFileReader
 
 from modules.utils import log
@@ -32,7 +34,7 @@ class PdfCreator:
     def process_files(self):
         n_files = 0
         for file in self.file_list:
-            if file.endswith(".pdf"):
+            if self.checks_valid_pdf(file):
                 input_file = file
                 filename = os.path.basename(file)
                 log("filename: " + filename)
@@ -73,3 +75,15 @@ class PdfCreator:
         # remove the file only if reading from nologo directory
         if self.from_directory:
             os.remove(input_pdf)
+
+    @staticmethod
+    def checks_valid_pdf(input_file) -> bool:
+        try:
+            mime = magic.Magic(mime=True)
+            mt = mime.from_file(input_file)
+        except:
+            return False
+        else:
+            if mt == "application/pdf":
+                return True
+        return False
