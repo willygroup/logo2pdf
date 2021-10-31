@@ -5,4 +5,4 @@ if [ ${0##*/} == ${BASH_SOURCE[0]##*/} ]; then
     echo
     exit 1
 fi
-python -m venv .linux_env && . ./.linux_env/bin/activate && pip install -r requirements.txt
+source ./.linux_env/bin/activate
