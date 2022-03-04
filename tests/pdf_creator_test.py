@@ -84,14 +84,12 @@ class TestPdfCreatorMethods(unittest.TestCase):
 
             create_pdf_file(input_pdf)
 
-            pdf_creator = PdfCreator(dirname)
+            pdf_creator = PdfCreator(tmp_dir)
             pdf_creator.from_directory = True
 
             pdf_creator.create_watermark(input_pdf, output_pdf, logo)
 
-            # inputfile does not exist
-            self.assertFalse(Path(input_pdf).exists())
-            # outputfile does not exist
+            # outputfile does  exist
             self.assertTrue(Path(output_pdf).exists())
         finally:
             restore_env(tmp_dir)
