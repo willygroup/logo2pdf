@@ -2,13 +2,15 @@ import os
 import unittest
 from pathlib import Path
 
+import tests.common
+
 from tests.common import (
     create_directory,
-    create_file,
+    create_logo_file,
     create_pdf_file,
+    prepare_env,
+    restore_env,
     dirname,
-    reset_environment,
-    set_environment,
 )
 from modules.pdf_creator import PdfCreator
 
@@ -16,130 +18,152 @@ from modules.pdf_creator import PdfCreator
 class TestPdfCreatorMethods(unittest.TestCase):
     def test_init(self):
 
-        pdf_creator = PdfCreator(dirname)
+        tmp_dir = prepare_env("pdf_creator_init")
 
-        self.assertEqual(
-            pdf_creator.logo_file, os.path.join(dirname, "files", "logo.pdf")
-        )
-        self.assertEqual(pdf_creator.output_dir, os.path.join(dirname, "files", "logo"))
-        self.assertEqual(
-            pdf_creator.input_dir, os.path.join(dirname, "files", "nologo")
-        )
-        self.assertEqual(pdf_creator.file_list, [])
-        self.assertEqual(pdf_creator.from_directory, False)
+        try:
+            pdf_creator = PdfCreator(tmp_dir)
+
+            self.assertEqual(
+                pdf_creator.logo_file, os.path.join(tmp_dir, "files", "logo.pdf")
+            )
+            self.assertEqual(
+                pdf_creator.output_dir, os.path.join(tmp_dir, "files", "logo")
+            )
+            self.assertEqual(
+                pdf_creator.input_dir, os.path.join(tmp_dir, "files", "nologo")
+            )
+            self.assertEqual(pdf_creator.file_list, [])
+            self.assertEqual(pdf_creator.from_directory, False)
+        finally:
+            restore_env(tmp_dir)
 
     def test_set_file_list(self):
-        list = ["file1.pdf", "file2.pxf", "file3.pdf"]
-        pdf_creator = PdfCreator(dirname)
-        pdf_creator.set_file_list(list)
+        tmp_dir = prepare_env("pdf_creator_set_file_list")
+        try:
+            list = ["file1.pdf", "file2.pxf", "file3.pdf"]
+            pdf_creator = PdfCreator(tmp_dir)
+            pdf_creator.set_file_list(list)
 
-        expected = ["file1.pdf", "file3.pdf"]
+            expected = ["file1.pdf", "file3.pdf"]
 
-        self.assertEqual(expected, pdf_creator.file_list)
-
-        reset_environment(dirname)
+            self.assertEqual(expected, pdf_creator.file_list)
+        finally:
+            restore_env(tmp_dir)
 
     def test_read_directory_content(self):
-        set_environment(dirname)
-        # create 3 file on tmp directory
-        create_file(os.path.join(dirname, "tmp", "file1.pdf"))
-        create_file(os.path.join(dirname, "tmp", "file2.pxf"))
-        create_file(os.path.join(dirname, "tmp", "file3.pdf"))
-        pdf_creator = PdfCreator(dirname)
-        # forcing input directory
-        pdf_creator.input_dir = os.path.join(dirname, "tmp")
+        tmp_dir = prepare_env("pdf_creator_read_dir_content")
 
-        pdf_creator.read_directory_content()
+        try:
+            # create 3 file on tmp directory
+            create_pdf_file(os.path.join(tmp_dir, "file1.pdf"))
+            create_pdf_file(os.path.join(tmp_dir, "file2.pxf"), False)
+            create_pdf_file(os.path.join(tmp_dir, "file3.pdf"))
+            pdf_creator = PdfCreator(tmp_dir)
+            # forcing input directory
+            pdf_creator.input_dir = os.path.join(tmp_dir)
 
-        expected = [
-            os.path.join(dirname, "tmp", "file1.pdf"),
-            os.path.join(dirname, "tmp", "file3.pdf"),
-        ]
+            pdf_creator.read_directory_content()
 
-        self.assertEqual(expected, pdf_creator.file_list)
+            expected = [
+                os.path.join(tmp_dir, "file1.pdf"),
+                os.path.join(tmp_dir, "file3.pdf"),
+            ]
 
-        reset_environment(dirname)
+            self.assertEqual(expected, pdf_creator.file_list)
+        finally:
+            restore_env(tmp_dir)
 
     def test_create_watermark(self):
-        set_environment(dirname)
-        input_pdf = os.path.join(dirname, "tmp", "nologo_file.pdf")
-        output_pdf = os.path.join(dirname, "tmp", "logo_file.pdf")
-        logo = os.path.join(dirname, "test_files", "logo.pdf")
+        tmp_dir = prepare_env("pdf_creator_create_watermark")
 
-        create_pdf_file(input_pdf)
+        try:
+            input_pdf = os.path.join(tmp_dir, "nologo_file.pdf")
+            output_pdf = os.path.join(tmp_dir, "logo_file.pdf")
 
-        pdf_creator = PdfCreator(dirname)
-        pdf_creator.from_directory = True
+            logo = os.path.join(dirname, "test_files", "logo.pdf")
 
-        pdf_creator.create_watermark(input_pdf, output_pdf, logo)
+            create_pdf_file(input_pdf)
 
-        # inputfile does not exist
-        self.assertFalse(Path(input_pdf).exists())
-        # outputfile does not exist
-        self.assertTrue(Path(output_pdf).exists())
+            pdf_creator = PdfCreator(dirname)
+            pdf_creator.from_directory = True
 
-        reset_environment(dirname)
+            pdf_creator.create_watermark(input_pdf, output_pdf, logo)
+
+            # inputfile does not exist
+            self.assertFalse(Path(input_pdf).exists())
+            # outputfile does not exist
+            self.assertTrue(Path(output_pdf).exists())
+        finally:
+            restore_env(tmp_dir)
 
     def test_process_files(self):
-        set_environment(dirname)
-        input_dir = os.path.join(dirname, "tmp", "nologo")
-        output_dir = os.path.join(dirname, "tmp", "withlogo")
-        file_1 = os.path.join(input_dir, "file1.pdf")
-        file_2 = os.path.join(input_dir, "file2.pdf")
-        file_3 = os.path.join(input_dir, "file3.pxf")
-        file_4 = os.path.join(input_dir, "file4.pdf")
+        tmp_dir = prepare_env("pdf_creator_process_files")
 
-        file_1_out = os.path.join(output_dir, "file1_logo.pdf")
-        file_2_out = os.path.join(output_dir, "file2_logo.pdf")
-        file_3_out = os.path.join(output_dir, "file3_logo.pxf")
-        file_4_out = os.path.join(output_dir, "file4_logo.pdf")
+        try:
+            output_dir = os.path.join(tmp_dir, "withlogo")
+            input_dir = os.path.join(tmp_dir, "no_logo")
+            file_1 = os.path.join(input_dir, "file1.pdf")
+            file_2 = os.path.join(input_dir, "file2.pdf")
+            file_3 = os.path.join(input_dir, "file3.pxf")
+            file_4 = os.path.join(input_dir, "file4.pdf")
 
-        logo_file = os.path.join(dirname, "test_files", "logo.pdf")
+            file_1_out = os.path.join(output_dir, "file1_logo.pdf")
+            file_2_out = os.path.join(output_dir, "file2_logo.pdf")
+            file_3_out = os.path.join(output_dir, "file3_logo.pxf")
+            file_4_out = os.path.join(output_dir, "file4_logo.pdf")
 
-        create_directory(input_dir)
-        create_directory(output_dir)
-        create_pdf_file(file_1)
-        create_pdf_file(file_2)
-        create_pdf_file(file_3)
-        create_pdf_file(file_4)
+            logo_file = os.path.join(tmp_dir, "logo.pdf")
+            create_logo_file(logo_file)
 
-        pdf_creator = PdfCreator(dirname)
+            create_directory(input_dir)
+            create_directory(output_dir)
+            create_pdf_file(file_1)
+            create_pdf_file(file_2, False)
+            create_pdf_file(file_3, False)
+            create_pdf_file(file_4)
 
-        pdf_creator.input_dir = os.path.join(input_dir)
-        pdf_creator.output_dir = os.path.join(output_dir)
-        pdf_creator.logo_file = logo_file
-        pdf_creator.read_directory_content()
+            pdf_creator = PdfCreator(tmp_dir)
 
-        pdf_creator.process_files()
+            pdf_creator.input_dir = input_dir
+            pdf_creator.output_dir = output_dir
+            pdf_creator.logo_file = logo_file
+            pdf_creator.read_directory_content()
 
-        self.assertFalse(Path(file_1).exists())
-        self.assertFalse(Path(file_2).exists())
-        self.assertTrue(Path(file_3).exists())
-        self.assertFalse(Path(file_4).exists())
+            n_files = pdf_creator.process_files()
 
-        self.assertTrue(Path(file_1_out).exists())
-        self.assertTrue(Path(file_2_out).exists())
-        self.assertFalse(Path(file_3_out).exists())
-        self.assertTrue(Path(file_4_out).exists())
+            self.assertTrue(n_files == 2)
 
-        reset_environment(dirname)
+            self.assertFalse(Path(file_1).exists())
+            self.assertTrue(Path(file_2).exists())
+            self.assertTrue(Path(file_3).exists())
+            self.assertFalse(Path(file_4).exists())
+
+            self.assertTrue(Path(file_1_out).exists())
+            self.assertFalse(Path(file_2_out).exists())
+            self.assertFalse(Path(file_3_out).exists())
+            self.assertTrue(Path(file_4_out).exists())
+
+        finally:
+            restore_env(tmp_dir)
 
     def test_checks_valid_pdf(self):
-        set_environment(dirname)
+        tmp_dir = prepare_env("pdf_creator_checks_valid_pdf")
 
-        file_1 = os.path.join(dirname, "tmp", "file1.pdf")
-        file_2 = os.path.join(dirname, "tmp", "file2.pxf")
-        file_3 = os.path.join(dirname, "tmp", "file3.pdf")
+        try:
+            file_1 = os.path.join(tmp_dir, "file1.pdf")
+            file_2 = os.path.join(tmp_dir, "file2.pxf")
+            file_3 = os.path.join(tmp_dir, "file3.pdf")
 
-        create_pdf_file(file_1)
-        create_pdf_file(file_2)
-        create_file(file_3)
+            create_pdf_file(file_1)
+            create_pdf_file(file_2)
+            create_pdf_file(file_3, False)
 
-        self.assertTrue(PdfCreator.checks_valid_pdf(file_1))
-        self.assertTrue(PdfCreator.checks_valid_pdf(file_2))
-        self.assertFalse(PdfCreator.checks_valid_pdf(file_3))
+            self.assertTrue(PdfCreator.checks_valid_pdf(file_1))
+            self.assertTrue(PdfCreator.checks_valid_pdf(file_2))
+            self.assertFalse(PdfCreator.checks_valid_pdf(file_3))
 
-        reset_environment(dirname)
+        finally:
+            restore_env(tmp_dir)
 
 
 if __name__ == "__main__":

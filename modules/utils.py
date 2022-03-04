@@ -7,17 +7,11 @@ import sys
 import os
 import magic
 
-
+# FIXME remove this: use PdfCreator.checks_valid_pdf() instead
 def checks_valid_pdf(input_file) -> bool:
-    try:
-        mime = magic.Magic(mime=True)
-        mt = mime.from_file(input_file)
-    except:
-        return False
-    else:
-        if mt == "application/pdf":
-            return True
-    return False
+    PdfCreator.checks_valid_pdf(input_file)
+
+   
 
 
 def create_environment(dirname):
@@ -35,6 +29,7 @@ def create_environment(dirname):
     if not logo_file:
         print("No files/logo.pdf file found!")
         sys.exit(1)
+    print("Check on logo: "+logo_file)
     if checks_valid_pdf(logo_file) != True:
         print("logo.pdf is not a valid pdf file!")
         sys.exit(1)
