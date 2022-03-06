@@ -2,7 +2,6 @@ import os
 import unittest
 from pathlib import Path
 
-import tests.common
 
 from tests.common import (
     create_directory,
@@ -16,7 +15,14 @@ from modules.pdf_creator import PdfCreator
 
 
 class TestPdfCreatorMethods(unittest.TestCase):
+    """
+    Testing PdfCreator
+    """
+
     def test_init(self):
+        """
+        Init method test
+        """
 
         tmp_dir = prepare_env("pdf_creator_init")
 
@@ -38,11 +44,14 @@ class TestPdfCreatorMethods(unittest.TestCase):
             restore_env(tmp_dir)
 
     def test_set_file_list(self):
+        """
+        set_file method test
+        """
         tmp_dir = prepare_env("pdf_creator_set_file_list")
         try:
-            list = ["file1.pdf", "file2.pxf", "file3.pdf"]
+            pdf_list = ["file1.pdf", "file2.pxf", "file3.pdf"]
             pdf_creator = PdfCreator(tmp_dir)
-            pdf_creator.set_file_list(list)
+            pdf_creator.set_file_list(pdf_list)
 
             expected = ["file1.pdf", "file3.pdf"]
 
@@ -51,6 +60,9 @@ class TestPdfCreatorMethods(unittest.TestCase):
             restore_env(tmp_dir)
 
     def test_read_directory_content(self):
+        """
+        read_directory_content method test
+        """
         tmp_dir = prepare_env("pdf_creator_read_dir_content")
 
         try:
@@ -74,6 +86,9 @@ class TestPdfCreatorMethods(unittest.TestCase):
             restore_env(tmp_dir)
 
     def test_create_watermark(self):
+        """
+        create_watermark method test
+        """
         tmp_dir = prepare_env("pdf_creator_create_watermark")
 
         try:

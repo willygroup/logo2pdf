@@ -5,10 +5,10 @@
 A script to add a watremark to a pdf file
 """
 
-from modules.utils import create_environment
 import os
 import sys
 
+from modules.utils import create_environment
 from modules.pdf_creator import PdfCreator
 
 if __name__ == "__main__":
@@ -29,6 +29,6 @@ if __name__ == "__main__":
     PROCESSED_FILES = pdf_creator.process_files()
 
     if PROCESSED_FILES > 0:
-        print("%d files processed" % PROCESSED_FILES)
+        print("{PROCESSED_FILES} files processed")
     else:
         print("No file processed")

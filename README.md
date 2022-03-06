@@ -29,4 +29,3 @@ Add logo to PDF files
  - PyPDF2
  - filetype
  - os, sys, requests
- - python-magic

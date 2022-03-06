@@ -2,16 +2,10 @@
 Utilities module
 """
 
-from modules.pdf_creator import PdfCreator
 import sys
 import os
-import magic
 
-# FIXME remove this: use PdfCreator.checks_valid_pdf() instead
-def checks_valid_pdf(input_file) -> bool:
-    PdfCreator.checks_valid_pdf(input_file)
-
-   
+from modules.pdf_creator import PdfCreator
 
 
 def create_environment(dirname):
@@ -29,7 +23,7 @@ def create_environment(dirname):
     if not logo_file:
         print("No files/logo.pdf file found!")
         sys.exit(1)
-    print("Check on logo: "+logo_file)
-    if checks_valid_pdf(logo_file) != True:
+    print("Check on logo: " + logo_file)
+    if not PdfCreator.checks_valid_pdf(logo_file):
         print("logo.pdf is not a valid pdf file!")
         sys.exit(1)

@@ -32,7 +32,7 @@ class PdfCreator:
             if file.endswith(".pdf"):
                 self.file_list.append(file)
 
-    def process_files(self):
+    def process_files(self) -> int:
         n_files = 0
         for file in self.file_list:
 
