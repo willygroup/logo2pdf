@@ -2,11 +2,7 @@
 Provides methods to create PDFs
 """
 
-from ast import Return
-from codecs import ignore_errors
 import os
-import shutil
-import sys
 
 from PyPDF2 import PdfFileWriter, PdfFileReader
 import PyPDF2
@@ -44,24 +40,25 @@ class PdfCreator:
             if self.create_watermark(
                 input_pdf=input_file, output=output_file, watermark=self.logo_file
             ):
-
                 n_files = n_files + 1
                 # remove the file only if reading from nologo directory
                 if self.from_directory:
                     os.remove(input_file)
-                    # shutil.rmtree(input_file, ignore_errors=False)
-                    # shutil.rmtree(input_file, ignore_errors=True)
         return n_files
 
     def create_watermark(self, input_pdf, output, watermark) -> bool:
-        watermark_obj = PdfFileReader(watermark)
-        watermark_page = watermark_obj.getPage(0)
+        try:
+            watermark_obj = PdfFileReader(watermark)
+            watermark_page = watermark_obj.getPage(0)
+        except Exception:
+            print("failed to load watermark file")
+            return False
 
         with open(input_pdf, "rb") as pdf:
             try:
                 pdf_reader = PdfFileReader(pdf)
                 pdf_writer = PdfFileWriter()
-            except:
+            except Exception:
                 print("failed to initialize pdf_reader or writer")
                 return False
 
@@ -74,18 +71,15 @@ class PdfCreator:
             try:
                 with open(output, "wb") as out:
                     pdf_writer.write(out)
-
-            except:
+                    return True
+            except Exception:
                 print("Error writing to pdf output file")
                 return False
-            return True
-        return False
 
     @staticmethod
     def checks_valid_pdf(input_file) -> bool:
         try:
             PyPDF2.PdfFileReader(open(input_file, "rb"))
-        except:
-            return False
-        else:
             return True
+        except Exception:
+            return False

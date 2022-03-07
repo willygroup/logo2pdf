@@ -109,6 +109,28 @@ class TestPdfCreatorMethods(unittest.TestCase):
         finally:
             restore_env(tmp_dir)
 
+    def test_create_watermark_not_existing_logo(self):
+        """
+        create_watermark method test with no file
+        """
+        tmp_dir = prepare_env("pdf_creator_create_watermark_not_existing_logo")
+
+        try:
+            input_pdf = os.path.join(tmp_dir, "nologo_file.pdf")
+            output_pdf = os.path.join(tmp_dir, "logo_file.pdf")
+
+            logo = os.path.join(tmp_dir, "invalid_logo.pdf")
+
+            pdf_creator = PdfCreator(tmp_dir)
+            pdf_creator.from_directory = True
+
+            pdf_creator.create_watermark(input_pdf, output_pdf, logo)
+
+            # outputfile does  exist
+            self.assertFalse(Path(output_pdf).exists())
+        finally:
+            restore_env(tmp_dir)
+
     def test_process_files(self):
         tmp_dir = prepare_env("pdf_creator_process_files")
 
