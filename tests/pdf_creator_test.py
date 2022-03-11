@@ -77,11 +77,11 @@ class TestPdfCreatorMethods(unittest.TestCase):
             pdf_creator.read_directory_content()
 
             expected = [
-                os.path.join(tmp_dir, "file1.pdf"),
                 os.path.join(tmp_dir, "file3.pdf"),
+                os.path.join(tmp_dir, "file1.pdf"),
             ]
 
-            self.assertEqual(expected, pdf_creator.file_list)
+            self.assertEqual(sorted(expected), sorted(pdf_creator.file_list))
         finally:
             restore_env(tmp_dir)
 
