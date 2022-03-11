@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-A script to add a watremark to a pdf file
+A script to add a watermark to a pdf file
 """
 
 import os
