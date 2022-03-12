@@ -14,18 +14,26 @@ class PdfLogoCreator:
     def __init__(
         self, logo_file, output_file, dimension: Point, position: Point = Point(5, 5)
     ) -> None:
+
         self.logo_file = logo_file
         self.output_file = output_file
         self.logo_dimension = dimension
         self.logo_position = position
-        self.output_file = output_file
-        self.logo_file = logo_file
         self.create_pdf_logo()
+
+    @classmethod
+    def create_pdf_logo_creator(
+        cls, logo_file, output_file, dimension: Point, position: Point = Point(5, 5)
+    ):
+        try:
+            res = cls(logo_file, output_file, dimension, position)
+        except (FileNotFoundError, RuntimeError):
+            return None
+        return res
 
     def create_pdf_logo(self):
         pdf = FPDF(orientation="P", unit="mm", format="A4")  # default
         pdf.add_page()
-        # pdf_h = 297
         pdf.set_xy(self.logo_position.x, self.logo_position.y)
         pdf.image(
             self.logo_file,
