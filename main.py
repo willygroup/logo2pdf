@@ -5,8 +5,8 @@
 An app to add a watermark to pdf files
 """
 
+import getopt
 import os
-import logging
 import sys
 import modules
 import gettext
@@ -15,19 +15,23 @@ import locale
 from PySide2.QtWidgets import (
     QAction,
     QApplication,
-    QButtonGroup,
-    QHBoxLayout,
     QLabel,
     QMainWindow,
     QMessageBox,
     QPushButton,
     QStatusBar,
+    QHBoxLayout,
     QVBoxLayout,
     QWidget,
+    QGridLayout,
+    QLineEdit,
 )
 from PySide2.QtGui import QIcon
-from functools import partial
 from PySide2 import QtCore
+
+from modules.gui.drop_area import DropArea
+from modules.pdf_creator import PdfCreator
+from modules.utils import create_environment
 
 
 if getattr(sys, "frozen", False):
@@ -43,7 +47,7 @@ current_locale, _ = locale.getlocale()
 if current_locale == "Italian_Italy":
     current_locale = "it_IT"
 locale_path = os.path.join("files", "locale")
-dictionary = gettext.translation("csv2lbl", locale_path, [current_locale])
+dictionary = gettext.translation("logo2pdf", locale_path, [current_locale])
 dictionary.install()
 _ = dictionary.gettext
 
@@ -61,80 +65,72 @@ class ErrorBox:
 
 
 class MainWindow(QMainWindow):
+    def set_as_default(self):
+        print("set_as_default")
+        pass
+
     def __init__(self):
         super().__init__()
-        config, csv_config = self.load_config()
-
-        self.config = config
-        self.csv_config = csv_config
-
-        self.setAcceptDrops(True)
-        self.setWindowTitle("csv2lbl")
-        self.setGeometry(300, 200, 500, 400)
-
-        self.label = QLabel(_("Drag&Drop csv files here..."))
-
-        self.label.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
-        self.label.setStyleSheet(
-            " font-size: 20px; font-weight: bold; font-family: Courier New;"
-        )
 
         self.set_icon()
         self.create_menu()
         self.create_status_bar()
 
-        self.row = self.create_button(_("Single Label Sheet for Row"), "row.png", 0)
-        self.row.setCheckable(True)
-        self.order = self.create_button(
-            _("Single Labels sheet for order"), "order.png", 1
-        )
-        self.order.setCheckable(True)
-        self.all = self.create_button(_("Single Labels Sheet for all"), "all.png", 2)
-        self.all.setCheckable(True)
+        main_layout = QHBoxLayout()
 
-        self.row.clicked.connect(partial(self.set_pdf_creation_flag, 0))
-        self.order.clicked.connect(partial(self.set_pdf_creation_flag, 1))
-        self.all.clicked.connect(partial(self.set_pdf_creation_flag, 2))
+        pdf_drop_area = DropArea(_("Drag pdf files here!"), "pdf")
+        pdf_drop_area.set_size(300, 300)
+        pdf_drop_area.set_background_color("darkgrey")
 
-        buttons_group = QButtonGroup(self)
-        buttons_group.addButton(self.row)
-        buttons_group.addButton(self.order)
-        buttons_group.addButton(self.all)
+        main_layout.addWidget(pdf_drop_area)
 
-        self.set_label()
+        right_layout = QVBoxLayout()
+        logo_drop_area = DropArea(_("Drag a logo here"), "image")
+        logo_drop_area.set_size(100, 100)
+        logo_drop_area.set_background_color("red")
 
-        button_bar = QWidget(self)
-        button_bar_layout = QHBoxLayout()
-        button_bar_layout.addWidget(self.row)
-        button_bar_layout.addWidget(self.order)
-        button_bar_layout.addWidget(self.all)
+        right_layout.addWidget(logo_drop_area)
 
-        button_bar.setLayout(button_bar_layout)
+        self.default_btn = QPushButton(_("Set as default"))
+        self.default_btn.setDisabled(True)
+        self.default_btn.clicked.connect(self.set_as_default)
 
-        layout = QVBoxLayout()
-        layout.addStretch()
-        layout.addWidget(self.label)
-        layout.addStretch()
-        layout.addWidget(button_bar)
+        right_layout.addWidget(self.default_btn)
+
+        logo_settings_area = QGridLayout()
+
+        logo_settings_area.addWidget(QLabel(_("Width:")), 0, 0)
+        self.logo_settings_width = QLineEdit()
+        logo_settings_area.addWidget(self.logo_settings_width, 0, 1)
+        self.logo_settings_width.setDisabled(True)
+        logo_settings_area.addWidget(QLabel("[px]"), 0, 2)
+
+        logo_settings_area.addWidget(QLabel(_("Height:")), 1, 0)
+        self.logo_settings_height = QLineEdit()
+        logo_settings_area.addWidget(self.logo_settings_height, 1, 1)
+        self.logo_settings_height.setDisabled(True)
+        logo_settings_area.addWidget(QLabel("[px]"), 1, 2)
+
+        logo_settings_area.addWidget(QLabel(_("Pos. X:")), 2, 0)
+        self.logo_settings_pos_x = QLineEdit()
+        logo_settings_area.addWidget(self.logo_settings_pos_x, 2, 1)
+        self.logo_settings_pos_x.setDisabled(True)
+        logo_settings_area.addWidget(QLabel("[mm]"), 2, 2)
+
+        logo_settings_area.addWidget(QLabel(_("Pos. Y:")), 3, 0)
+        self.logo_settings_pox_y = QLineEdit()
+        logo_settings_area.addWidget(self.logo_settings_pox_y, 3, 1)
+        self.logo_settings_pox_y.setDisabled(True)
+        logo_settings_area.addWidget(QLabel("[mm]"), 3, 2)
+
+        right_layout.addLayout(logo_settings_area)
+
+        main_layout.addLayout(right_layout)
 
         main_widget = QWidget(self)
-        main_widget.setLayout(layout)
+        main_widget.setLayout(main_layout)
 
         self.setCentralWidget(main_widget)
-        self.setFixedSize(450, 350)
-
-    def create_button(self, tooltip_text: str, image_filename: str, value: int):
-        button = QPushButton()
-        button.setToolTip(tooltip_text)
-        button.setIcon(QIcon(os.path.join("files", "images", image_filename)))
-        button.setIconSize(QtCore.QSize(100, 100))
-        button.setFixedSize(110, 110)
-        button.setCheckable(True)
-        button.clicked.connect(partial(self.set_pdf_creation_flag, value))
-        return button
-
-    def set_pdf_creation_flag(self, value):
-        self.config.pdf_creation = int(value)
 
     def create_menu(
         self,
@@ -157,7 +153,7 @@ class MainWindow(QMainWindow):
             QIcon(os.path.join("files", "images/settings.png")), _("Edit"), self
         )
         settings_menu.addAction(edit_settings)
-        settings_menu.triggered.connect(self.edit_settings)
+        # settings_menu.triggered.connect(self.edit_settings)
 
         aboutAction = QAction(
             QIcon(os.path.join("files", "images/info.png")), _("Info"), self
@@ -176,17 +172,16 @@ class MainWindow(QMainWindow):
             f'<p style="text-align:center;"><big><b>{modules.__package_name__}</b></big></p>'
             f'<p style="text-align:right;"><i>{_("version")}:</i> {modules.__version__}<br/>'
             f'<i>{_("author")}:</i> willygroup@gmail.com<br/>'
-            f"<i>Copyright 2022:</i> Daniele Forti"
         )
         dlg.show()
 
-    def edit_settings(self):
-        settings_dialog = SettingsDialog(self)
-        settings_dialog.draw(dirname, self.config)
-        settings_dialog.show()
+    # def edit_settings(self):
+    #     settings_dialog = SettingsDialog(self)
+    #     settings_dialog.draw(dirname, self.config)
+    #     settings_dialog.show()
 
     def set_icon(self):
-        appIcon = QIcon(os.path.join(dirname, "files", "images/icon.png"))
+        appIcon = QIcon(os.path.join(dirname, "files", "images/icon.png"))  # FIXME
         self.setWindowIcon(appIcon)
 
     def create_status_bar(self):
@@ -194,47 +189,9 @@ class MainWindow(QMainWindow):
         self.my_status.showMessage(_("Ready"))
         self.setStatusBar(self.my_status)
 
-    def dragEnterEvent(self, e):
-        if e.mimeData().hasUrls():
-            e.acceptProposedAction()
-
-    def dropEvent(self, e):
-        self.my_status.showMessage(_("In progress..."))
-
-        pdf_output_type = int(self.config.pdf_creation)
-        csv_config = self.csv_config
-        os_name = self.config.os_name
-        libreoffice_exe = self.config.libreoffice_exe
-        pdftk_exe = self.config.pdftk_exe
-        file_list = e.mimeData().urls()
-
-        labels_no = Utils.create_pdf_labels(
-            file_list,
-            dirname,
-            csv_config,
-            pdf_output_type,
-            os_name,
-            libreoffice_exe,
-            pdftk_exe,
-        )
-
-        if labels_no < 0:
-            self.my_status.showMessage(
-                _("Error creating the labels...").format(labels_no), 3000
-            )
-            ErrorBox(
-                self,
-                _("Error!"),
-                _(
-                    "Cannot create the labels,\nplease close all the labels viewer opened!"
-                ),
-            )
-            return
-
-        # update the status bar
-        self.my_status.showMessage(
-            _("Done! Created {} labels...").format(labels_no), 3000
-        )
+    # def dragEnterEvent(self, e):
+    #     if e.mimeData().hasUrls():
+    #         e.acceptProposedAction()
 
 
 def main():
@@ -245,64 +202,41 @@ def main():
     app.exec_()
 
 
-# if __name__ == "__main__":
+def execute_from_commandline():
+    dirname = os.path.dirname(os.path.abspath(__file__))
 
-#     FORMAT = "%(asctime)-15s `%(name)s` => '%(message)s'"
-#     logging.basicConfig(
-#         filename="./files/csv2lbl.log", level=logging.INFO, format=FORMAT
-#     )
-#     logger = logging.getLogger("main")
+    create_environment(dirname)
 
-#     logger.info("App Started")
+    pdf_creator = PdfCreator(dirname)
 
-#     if not Utils.check_if_template_exists(
-#         os.path.join(dirname, "files", "template.rtf")
-#     ):
-#         logger.error(
-#             "Abort: template file {} doesn't exist!".format(
-#                 os.path.join(dirname, "files", "template.rtf")
-#             )
-#         )
-#         sys.exit(1)
+    if len(sys.argv) == 1:
+        # process folder
+        pdf_creator.read_directory_content()
+    elif len(sys.argv) > 1:
+        files = sys.argv
+        files.remove(files[0])  # removing the executable file name
+        pdf_creator.set_file_list(files)
 
-#     main()
+    PROCESSED_FILES = pdf_creator.process_files()
 
-#     logger.info("App Closed")
-
-#     sys.exit(0)
+    if PROCESSED_FILES > 0:
+        print("{PROCESSED_FILES} files processed")
+    else:
+        print("No file processed")
 
 
-# #! /usr/bin/env python
-# # -*- coding: utf-8 -*-
-
-# """
-# A script to add a watermark to a pdf file
-# """
-
-# import os
-# import sys
-
-# from modules.utils import create_environment
-# from modules.pdf_creator import PdfCreator
-
-# if __name__ == "__main__":
-#     dirname = os.path.dirname(os.path.abspath(__file__))
-
-#     create_environment(dirname)
-
-#     pdf_creator = PdfCreator(dirname)
-
-#     if len(sys.argv) == 1:
-#         # process folder
-#         pdf_creator.read_directory_content()
-#     elif len(sys.argv) > 1:
-#         files = sys.argv
-#         files.remove(files[0])  # removing the executable file name
-#         pdf_creator.set_file_list(files)
-
-#     PROCESSED_FILES = pdf_creator.process_files()
-
-#     if PROCESSED_FILES > 0:
-#         print("{PROCESSED_FILES} files processed")
-#     else:
-#         print("No file processed")
+if __name__ == "__main__":
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "h:", ["help", "headless"])
+    except getopt.GetoptError:
+        print("main.py --headless")
+        sys.exit(2)
+    if len(opts) > 0:
+        for opt, arg in opts:
+            if opt == "--headless":
+                execute_from_commandline()
+            else:
+                print("main.py --headless")
+                sys.exit()
+    else:
+        main()

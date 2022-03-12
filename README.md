@@ -25,7 +25,25 @@ Add logo to PDF files
      ```
    - Check the *files/logo* directory for the new pdf files with you logo
 
-### Packages required
+### Packages required (see `requirements.txt`)
  - PyPDF2
  - filetype
  - os, sys, requests
+
+
+ ## Start the application with a different language in linux
+ ```bash
+ $ LANG=it_IT.UTF-8 python main.py
+ $ LANG=en_US.UTF-8 python main.py 
+ ```
+
+## Create .po translation file
+ ```bash 
+ $ xgettext main.py 
+ ```
+ This will create a `message.po` file in the root directory.
+
+## Create .mo translation file from .po
+ ```bash
+ $ msgfmt files/locale/it_IT/LC_MESSAGES/csv2lbl.po -o files/locale/it_IT/LC_MESSAGES/csv2lbl.mo
+ ```

@@ -1,0 +1,66 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2022-01-03 17:58+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: main.py:50
+msgid "Drag&Drop csv files here..."
+msgstr ""
+
+#: main.py:59
+msgid "Single Label Sheet for Row"
+msgstr ""
+
+#: main.py:61
+msgid "Single Labels sheet for order"
+msgstr ""
+
+#: main.py:63
+msgid "Single Labels Sheet for all"
+msgstr ""
+
+#: main.py:112
+msgid "File"
+msgstr ""
+
+#: main.py:113
+msgid "Help"
+msgstr ""
+
+#: main.py:134
+msgid "About"
+msgstr ""
+
+#: main.py:145
+msgid "Ready"
+msgstr ""
+
+#: main.py:153
+msgid "In progress..."
+msgstr ""
+
+#: main.py:166
+msgid "Done! Created {} labels..."
+msgstr ""
+
+msgid "version"
+msgstr "Version"
+
+msgid "author"
+msgstr "Author"
+
+msgid "Info"
+msgstr "Info"
+
