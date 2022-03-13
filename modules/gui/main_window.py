@@ -24,11 +24,32 @@ class MainWindow(QMainWindow):
         print("set_as_default")
         pass
 
+    def create_logo_pdf(self):
+        
+
+    def defaults_on_logo_settings(self):
+        self.logo_settings_default.setText(_("Create PDF"))
+        self.logo_settings_name.setText(_("logo_x"))
+        self.logo_settings_width.setText(_("150"))
+        self.logo_settings_height.setText(_("150"))
+        self.logo_settings_pos_x.setText(_("10"))
+        self.logo_settings_pox_y.setText(_("10"))
+
+    def enable_logo_settings(self, status: bool):
+        self.logo_settings_default.setDisabled(not status)
+        self.logo_settings_name.setDisabled(not status)
+        self.logo_settings_width.setDisabled(not status)
+        self.logo_settings_height.setDisabled(not status)
+        self.logo_settings_pos_x.setDisabled(not status)
+        self.logo_settings_pox_y.setDisabled(not status)
+
     def logo_action(self, e):
         print(e.mimeData().text())
         image_url = e.mimeData().urls()[0].toLocalFile()
         # TODO Check that the file is a valid image
         self.logo_drop_area.set_background(image_url)
+
+        self.enable_logo_settings(True)
 
     def __init__(self, dirname):
         super().__init__()
@@ -58,43 +79,40 @@ class MainWindow(QMainWindow):
         right_layout.addWidget(self.logo_drop_area)
         right_layout.setAlignment(self.logo_drop_area, Qt.AlignHCenter)
 
-        self.default_btn = QPushButton(_("Create PDF"))
-        self.default_btn.setDisabled(True)
-        self.default_btn.clicked.connect(self.set_as_default)
+        self.logo_settings_default = QPushButton(_("Create PDF"))
+        self.logo_settings_default.clicked.connect(self.create_logo_pdf)
 
-        right_layout.addWidget(self.default_btn)
+        right_layout.addWidget(self.logo_settings_default)
 
         logo_settings_area = QGridLayout()
 
         logo_settings_area.addWidget(QLabel(_("Name:")), 0, 0)
         self.logo_settings_name = QLineEdit()
         logo_settings_area.addWidget(self.logo_settings_name, 0, 1)
-        self.logo_settings_name.setDisabled(True)
         # logo_settings_area.addWidget(QIcon(check_ok_filename), 1, 2)  # TODO
 
         logo_settings_area.addWidget(QLabel(_("Width:")), 1, 0)
         self.logo_settings_width = QLineEdit()
         logo_settings_area.addWidget(self.logo_settings_width, 1, 1)
-        self.logo_settings_width.setDisabled(True)
         logo_settings_area.addWidget(QLabel("[px]"), 1, 2)
 
         logo_settings_area.addWidget(QLabel(_("Height:")), 2, 0)
         self.logo_settings_height = QLineEdit()
         logo_settings_area.addWidget(self.logo_settings_height, 2, 1)
-        self.logo_settings_height.setDisabled(True)
         logo_settings_area.addWidget(QLabel("[px]"), 2, 2)
 
         logo_settings_area.addWidget(QLabel(_("Pos. X:")), 3, 0)
         self.logo_settings_pos_x = QLineEdit()
         logo_settings_area.addWidget(self.logo_settings_pos_x, 3, 1)
-        self.logo_settings_pos_x.setDisabled(True)
         logo_settings_area.addWidget(QLabel("[mm]"), 3, 2)
 
         logo_settings_area.addWidget(QLabel(_("Pos. Y:")), 4, 0)
         self.logo_settings_pox_y = QLineEdit()
         logo_settings_area.addWidget(self.logo_settings_pox_y, 4, 1)
-        self.logo_settings_pox_y.setDisabled(True)
         logo_settings_area.addWidget(QLabel("[mm]"), 4, 2)
+
+        self.defaults_on_logo_settings()
+        self.enable_logo_settings(False)
 
         right_layout.addLayout(logo_settings_area)
 
