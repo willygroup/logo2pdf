@@ -10,10 +10,19 @@ class DropArea(QWidget):
         else:
             self.mimetype = ["application/pdf"]
         layout = QVBoxLayout()
-        layout.addWidget(QLabel(text))
+        self.background = QLabel(text)
+        self.background.setStyleSheet("border :3px solid blue;")
+
+        layout.addWidget(self.background)
 
         self.setLayout(layout)
         self.setAcceptDrops(True)
+
+    def set_background(self, image_filename):
+        self.background.setText("")
+        self.background.setStyleSheet(
+            "border-image: url({}) 0 0 0 0 stretch stretch;".format(image_filename)
+        )
 
     def set_size(self, width, height):
         self.setFixedSize(width, height)
@@ -27,4 +36,9 @@ class DropArea(QWidget):
 
     def dropEvent(self, e):
         print("dropEvent")
-        print(e.mimeData().text())
+        # print(e.mimeData().text())
+        if self.action:
+            self.action(e)
+
+    def set_action(self, action):
+        self.action = action
