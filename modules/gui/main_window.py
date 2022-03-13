@@ -1,4 +1,7 @@
 import os
+import shutil
+import modules
+
 from PySide2.QtWidgets import (
     QAction,
     QLabel,
@@ -14,30 +17,29 @@ from PySide2.QtWidgets import (
 )
 from PySide2.QtCore import Qt
 from PySide2.QtGui import QIcon
-import modules
+from modules import utils
+from modules.config import Config
 from modules.gui.drop_area import DropArea
 from modules.lang import _
+from modules.pdf_creator import PdfCreator
 from modules.pdf_logo_creator import PdfLogoCreator, Point
 
 
 class MainWindow(QMainWindow):
-    def set_as_default(self):
-        # TODO
-        print("set_as_default")
-        pass
-
     def create_logo_pdf(self):
+        """
+        Create a pdf from the image dropped with the settings specified
+        """
 
         # TODO
 
         # TODO copy the image in the `files/default/images/` directory ?
 
-        output_file = os.path.join(
-            "files", "default", "pdfs", self.logo_settings_name.text()
-        )
+        output_file: str = str(self.logo_settings_name.text()) + ".pdf"
+        output_file = os.path.join("files", "default", "pdfs", output_file)
 
         # TODO checks on the fields
-        _ = PdfLogoCreator.create_pdf_logo_creator(
+        logo = PdfLogoCreator.create_pdf_logo_creator(
             self.logo_image,
             output_file,
             Point(
@@ -51,9 +53,23 @@ class MainWindow(QMainWindow):
         )
 
         # TODO check if the pdflogcreator has successfully create a pdf
-        pass
+        if logo:
+            # Disable the settings, but the btn
+            self.enable_logo_settings(False)
+            self.logo_settings_default.setText(_("Set as Default"))
+            self.logo_settings_default.setEnabled(True)
 
-    def defaults_on_logo_settings(self):
+            print("logo_name: {}".format(self.config.config_logo_name))
+            self.logo_settings_default.clicked.connect(
+                lambda: self.set_default_logo(
+                    self.logo_image, self.logo_settings_name.text()
+                )
+            )
+
+    def default_on_logo_settings(self):
+        """
+        Set the default value for logo settings
+        """
         self.logo_settings_default.setText(_("Create PDF"))
         self.logo_settings_name.setText(_("logo_x"))
         self.logo_settings_width.setText(_("50"))
@@ -62,6 +78,9 @@ class MainWindow(QMainWindow):
         self.logo_settings_pos_y.setText(_("10"))
 
     def enable_logo_settings(self, status: bool):
+        """
+        Enable all the fields for the logo settings
+        """
         self.logo_settings_default.setDisabled(not status)
         self.logo_settings_name.setDisabled(not status)
         self.logo_settings_width.setDisabled(not status)
@@ -69,7 +88,40 @@ class MainWindow(QMainWindow):
         self.logo_settings_pos_x.setDisabled(not status)
         self.logo_settings_pos_y.setDisabled(not status)
 
+    def add_logo(self, e):
+        """
+        Performs the add logo operation on the dropped files
+        """
+        # TODO check the file type
+        print("add_logo")
+        # TODO read from self.default
+        logo_file = os.path.join("files", "default", "pdfs", "willygroup.pdf")
+
+        pdf_creator = PdfCreator(self.dirname, logo_file)
+
+        input_files = e.mimeData().urls()
+        file_list = []
+        for file in input_files:
+            file_list.append(file.toLocalFile())
+
+        pdf_creator.set_file_list(file_list)
+
+        processed_files = pdf_creator.process_files()
+
+        if processed_files > 0:
+            print("{} files processed".format(processed_files))
+            # TODO Open the output directory
+            utils.open_directory(os.path.join("output", "logo"))
+
+        else:
+            print("No file processed")
+
+        pass
+
     def logo_action(self, e):
+        """
+        Set as image of the logo the image dropped
+        """
         print(e.mimeData().text())
         image_url = e.mimeData().urls()[0].toLocalFile()
         # TODO Check that the file is a valid image
@@ -77,11 +129,53 @@ class MainWindow(QMainWindow):
         self.logo_image = image_url
 
         self.enable_logo_settings(True)
+        self.default_on_logo_settings()
 
-    def __init__(self, dirname):
+    def set_default_logo(self, image_logo_path=None, new_default_logo=None):
+        """
+        Set the default logo
+        """
+        print("set_default_logo: {}".format(new_default_logo))
+        if new_default_logo:
+            image_name = new_default_logo + ".png"
+            self.config.config_logo_name = new_default_logo
+        else:
+            image_name = self.config.config_logo_name + ".png"
+
+        print("image_name: {}", image_name)
+
+        image_url = os.path.join("files", "default", "images", image_name)
+        # TODO Check that the file is a valid image
+        self.logo_drop_area.set_background(image_url)
+
+        self.default_on_logo_settings()
+        self.enable_logo_settings(False)
+
+        if new_default_logo:
+            # TODO Save on config file
+            print("set_config: {}".format(new_default_logo))
+            self.config.set_config(new_default_logo)
+            res = self.config.write_config()
+            print("SAVING: {}".format(res))
+
+            # TODO Copy file in the directory
+            print(
+                "copy from {} to {}".format(
+                    image_logo_path,
+                    image_url,
+                )
+            )
+            shutil.copyfile(image_logo_path, image_url)
+            pass
+
+    def __init__(self, dirname, config: Config):
+        """
+        App MainWindow
+        """
         super().__init__()
 
         self.dirname = dirname
+        self.config = config
 
         self.set_icon()
         self.create_menu()
@@ -89,11 +183,12 @@ class MainWindow(QMainWindow):
 
         main_layout = QHBoxLayout()
 
-        pdf_drop_area = DropArea(_("Drag pdf files here!"), "pdf")
-        pdf_drop_area.set_size(300, 300)
-        pdf_drop_area.set_background_color("darkgrey")
+        self.pdf_drop_area = DropArea(_("Drag pdf files here!"), "pdf")
+        self.pdf_drop_area.set_size(300, 300)
+        self.pdf_drop_area.set_background_color("darkgrey")
+        self.pdf_drop_area.set_action(self.add_logo)
 
-        main_layout.addWidget(pdf_drop_area)
+        main_layout.addWidget(self.pdf_drop_area)
 
         right_layout = QVBoxLayout()
 
@@ -116,7 +211,6 @@ class MainWindow(QMainWindow):
         logo_settings_area.addWidget(QLabel(_("Name:")), 0, 0)
         self.logo_settings_name = QLineEdit()
         logo_settings_area.addWidget(self.logo_settings_name, 0, 1)
-        # logo_settings_area.addWidget(QIcon(check_ok_filename), 1, 2)  # TODO
 
         logo_settings_area.addWidget(QLabel(_("Width:")), 1, 0)
         self.logo_settings_width = QLineEdit()
@@ -138,8 +232,9 @@ class MainWindow(QMainWindow):
         logo_settings_area.addWidget(self.logo_settings_pos_y, 4, 1)
         logo_settings_area.addWidget(QLabel("[mm]"), 4, 2)
 
-        self.defaults_on_logo_settings()
-        self.enable_logo_settings(False)
+        # self.default_on_logo_settings()
+        # self.enable_logo_settings(False)
+        self.set_default_logo()
 
         right_layout.addLayout(logo_settings_area)
 
@@ -153,6 +248,9 @@ class MainWindow(QMainWindow):
     def create_menu(
         self,
     ):
+        """
+        Creates the App menu
+        """
         main_menu = self.menuBar()
         file_menu = main_menu.addMenu(_("File"))
         settings_menu = main_menu.addMenu(_("Settings"))
@@ -181,9 +279,15 @@ class MainWindow(QMainWindow):
         help_menu.addAction(aboutAction)
 
     def exit_app(self):
+        """
+        Exits the App
+        """
         self.close()
 
     def show_about(self):
+        """
+        Shows the About dialog
+        """
         dlg = QMessageBox(self)
         dlg.setWindowTitle(_("About"))
         dlg.setText(
@@ -199,10 +303,16 @@ class MainWindow(QMainWindow):
     #     settings_dialog.show()
 
     def set_icon(self):
+        """
+        Sets the App icon
+        """
         appIcon = QIcon(os.path.join(self.dirname, "files", "images/icon.png"))
         self.setWindowIcon(appIcon)
 
     def create_status_bar(self):
+        """
+        Creates the App Status bar
+        """
         self.my_status = QStatusBar()
         self.my_status.showMessage(_("Ready"))
         self.setStatusBar(self.my_status)

@@ -13,6 +13,8 @@ import sys
 from PySide2.QtWidgets import (
     QApplication,
 )
+from modules import utils
+from modules.config import Config
 
 from modules.gui.main_window import MainWindow
 from modules.pdf_creator import PdfCreator
@@ -31,17 +33,25 @@ else:
 def main():
 
     app = QApplication(sys.argv)
-    window = MainWindow(dirname)
-    window.show()
-    app.exec_()
+    config = Config(dirname, os.path.join("files", "config.conf"))
+    if config.load_config():
+        window = MainWindow(dirname, config)
+        window.show()
+        app.exec_()
+    else:
+        print("Error loading the config")
+        sys.exit(1)
 
 
 def execute_from_commandline():
-    dirname = os.path.dirname(os.path.abspath(__file__))
-
+    """
+    Execute the app as a script from commandline
+    """
     create_environment(dirname)
 
-    pdf_creator = PdfCreator(dirname)
+    # TODO load logo from config
+    logo_file = os.path.join("files", "default", "pdfs", "willygroup.pdf")
+    pdf_creator = PdfCreator(dirname, logo_file)
 
     if len(sys.argv) == 1:
         # process folder
@@ -51,10 +61,11 @@ def execute_from_commandline():
         files.remove(files[0])  # removing the executable file name
         pdf_creator.set_file_list(files)
 
-    PROCESSED_FILES = pdf_creator.process_files()
+    processed_files = pdf_creator.process_files()
 
-    if PROCESSED_FILES > 0:
-        print("{PROCESSED_FILES} files processed")
+    if processed_files > 0:
+        print("{} files processed".format(processed_files))
+        utils.open_directory(os.path.join("output", "logo"))
     else:
         print("No file processed")
 
