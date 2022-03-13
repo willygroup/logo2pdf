@@ -17,23 +17,49 @@ from PySide2.QtGui import QIcon
 import modules
 from modules.gui.drop_area import DropArea
 from modules.lang import _
+from modules.pdf_logo_creator import PdfLogoCreator, Point
 
 
 class MainWindow(QMainWindow):
     def set_as_default(self):
+        # TODO
         print("set_as_default")
         pass
 
     def create_logo_pdf(self):
-        
+
+        # TODO
+
+        # TODO copy the image in the `files/default/images/` directory ?
+
+        output_file = os.path.join(
+            "files", "default", "pdfs", self.logo_settings_name.text()
+        )
+
+        # TODO checks on the fields
+        _ = PdfLogoCreator.create_pdf_logo_creator(
+            self.logo_image,
+            output_file,
+            Point(
+                int(self.logo_settings_width.text()),
+                int(self.logo_settings_height.text()),
+            ),
+            Point(
+                float(self.logo_settings_pos_x.text()),
+                float(self.logo_settings_pos_y.text()),
+            ),
+        )
+
+        # TODO check if the pdflogcreator has successfully create a pdf
+        pass
 
     def defaults_on_logo_settings(self):
         self.logo_settings_default.setText(_("Create PDF"))
         self.logo_settings_name.setText(_("logo_x"))
-        self.logo_settings_width.setText(_("150"))
-        self.logo_settings_height.setText(_("150"))
+        self.logo_settings_width.setText(_("50"))
+        self.logo_settings_height.setText(_("50"))
         self.logo_settings_pos_x.setText(_("10"))
-        self.logo_settings_pox_y.setText(_("10"))
+        self.logo_settings_pos_y.setText(_("10"))
 
     def enable_logo_settings(self, status: bool):
         self.logo_settings_default.setDisabled(not status)
@@ -41,13 +67,14 @@ class MainWindow(QMainWindow):
         self.logo_settings_width.setDisabled(not status)
         self.logo_settings_height.setDisabled(not status)
         self.logo_settings_pos_x.setDisabled(not status)
-        self.logo_settings_pox_y.setDisabled(not status)
+        self.logo_settings_pos_y.setDisabled(not status)
 
     def logo_action(self, e):
         print(e.mimeData().text())
         image_url = e.mimeData().urls()[0].toLocalFile()
         # TODO Check that the file is a valid image
         self.logo_drop_area.set_background(image_url)
+        self.logo_image = image_url
 
         self.enable_logo_settings(True)
 
@@ -94,12 +121,12 @@ class MainWindow(QMainWindow):
         logo_settings_area.addWidget(QLabel(_("Width:")), 1, 0)
         self.logo_settings_width = QLineEdit()
         logo_settings_area.addWidget(self.logo_settings_width, 1, 1)
-        logo_settings_area.addWidget(QLabel("[px]"), 1, 2)
+        logo_settings_area.addWidget(QLabel("[mm]"), 1, 2)
 
         logo_settings_area.addWidget(QLabel(_("Height:")), 2, 0)
         self.logo_settings_height = QLineEdit()
         logo_settings_area.addWidget(self.logo_settings_height, 2, 1)
-        logo_settings_area.addWidget(QLabel("[px]"), 2, 2)
+        logo_settings_area.addWidget(QLabel("[mm]"), 2, 2)
 
         logo_settings_area.addWidget(QLabel(_("Pos. X:")), 3, 0)
         self.logo_settings_pos_x = QLineEdit()
@@ -107,8 +134,8 @@ class MainWindow(QMainWindow):
         logo_settings_area.addWidget(QLabel("[mm]"), 3, 2)
 
         logo_settings_area.addWidget(QLabel(_("Pos. Y:")), 4, 0)
-        self.logo_settings_pox_y = QLineEdit()
-        logo_settings_area.addWidget(self.logo_settings_pox_y, 4, 1)
+        self.logo_settings_pos_y = QLineEdit()
+        logo_settings_area.addWidget(self.logo_settings_pos_y, 4, 1)
         logo_settings_area.addWidget(QLabel("[mm]"), 4, 2)
 
         self.defaults_on_logo_settings()
