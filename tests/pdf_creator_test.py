@@ -25,18 +25,15 @@ class TestPdfCreatorMethods(unittest.TestCase):
         """
 
         tmp_dir = prepare_env("pdf_creator_init")
-
         try:
-            pdf_creator = PdfCreator(tmp_dir)
+            pdf_creator = PdfCreator(tmp_dir, os.path.join(dirname, "logo.pdf"))
 
+            self.assertEqual(pdf_creator.logo_file, os.path.join(dirname, "logo.pdf"))
             self.assertEqual(
-                pdf_creator.logo_file, os.path.join(tmp_dir, "files", "logo.pdf")
+                pdf_creator.output_dir, os.path.join(tmp_dir, "output", "logo")
             )
             self.assertEqual(
-                pdf_creator.output_dir, os.path.join(tmp_dir, "files", "logo")
-            )
-            self.assertEqual(
-                pdf_creator.input_dir, os.path.join(tmp_dir, "files", "nologo")
+                pdf_creator.input_dir, os.path.join(tmp_dir, "output", "nologo")
             )
             self.assertEqual(pdf_creator.file_list, [])
             self.assertEqual(pdf_creator.from_directory, False)
@@ -50,7 +47,7 @@ class TestPdfCreatorMethods(unittest.TestCase):
         tmp_dir = prepare_env("pdf_creator_set_file_list")
         try:
             pdf_list = ["file1.pdf", "file2.pxf", "file3.pdf"]
-            pdf_creator = PdfCreator(tmp_dir)
+            pdf_creator = PdfCreator(tmp_dir, os.path.join(dirname, "logo.pdf"))
             pdf_creator.set_file_list(pdf_list)
 
             expected = ["file1.pdf", "file3.pdf"]
@@ -70,7 +67,7 @@ class TestPdfCreatorMethods(unittest.TestCase):
             create_pdf_file(os.path.join(tmp_dir, "file1.pdf"))
             create_pdf_file(os.path.join(tmp_dir, "file2.pxf"), False)
             create_pdf_file(os.path.join(tmp_dir, "file3.pdf"))
-            pdf_creator = PdfCreator(tmp_dir)
+            pdf_creator = PdfCreator(tmp_dir, os.path.join(dirname, "logo.pdf"))
             # forcing input directory
             pdf_creator.input_dir = os.path.join(tmp_dir)
 
@@ -99,7 +96,7 @@ class TestPdfCreatorMethods(unittest.TestCase):
 
             create_pdf_file(input_pdf)
 
-            pdf_creator = PdfCreator(tmp_dir)
+            pdf_creator = PdfCreator(tmp_dir, os.path.join(dirname, "logo.pdf"))
             pdf_creator.from_directory = True
 
             pdf_creator.create_watermark(input_pdf, output_pdf, logo)
@@ -121,7 +118,7 @@ class TestPdfCreatorMethods(unittest.TestCase):
 
             logo = os.path.join(tmp_dir, "invalid_logo.pdf")
 
-            pdf_creator = PdfCreator(tmp_dir)
+            pdf_creator = PdfCreator(tmp_dir, logo)
             pdf_creator.from_directory = True
 
             pdf_creator.create_watermark(input_pdf, output_pdf, logo)
@@ -157,7 +154,7 @@ class TestPdfCreatorMethods(unittest.TestCase):
             create_pdf_file(file_3, False)
             create_pdf_file(file_4)
 
-            pdf_creator = PdfCreator(tmp_dir)
+            pdf_creator = PdfCreator(tmp_dir, os.path.join(dirname, "logo.pdf"))
 
             pdf_creator.input_dir = input_dir
             pdf_creator.output_dir = output_dir
