@@ -58,6 +58,7 @@ class MainWindow(QMainWindow):
             self.enable_logo_settings(False)
             self.logo_settings_default.setText(_("Set as Default"))
             self.logo_settings_default.setEnabled(True)
+            self.logo_show_pdf.setVisible(True)
 
             print("logo_name: {}".format(self.config.config_logo_name))
             self.logo_settings_default.clicked.connect(
@@ -95,7 +96,9 @@ class MainWindow(QMainWindow):
         # TODO check the file type
         print("add_logo")
         # TODO read from self.default
-        logo_file = os.path.join("files", "default", "pdfs", "willygroup.pdf")
+        logo_file = os.path.join(
+            "files", "default", "pdfs", self.config.config_logo_name + ".pdf"
+        )
 
         pdf_creator = PdfCreator(self.dirname, logo_file)
 
@@ -145,11 +148,6 @@ class MainWindow(QMainWindow):
         print("image_name: {}", image_name)
 
         image_url = os.path.join("files", "default", "images", image_name)
-        # TODO Check that the file is a valid image
-        self.logo_drop_area.set_background(image_url)
-
-        self.default_on_logo_settings()
-        self.enable_logo_settings(False)
 
         if new_default_logo:
             # TODO Save on config file
@@ -165,8 +163,20 @@ class MainWindow(QMainWindow):
                     image_url,
                 )
             )
-            shutil.copyfile(image_logo_path, image_url)
-            pass
+            try:
+                shutil.copyfile(image_logo_path, image_url)
+            except shutil.SameFileError:
+                pass
+            except Exception as ex:
+                print("Exception: {}".format(type(ex).__name__))
+
+            self.logo_show_pdf.setVisible(False)
+
+        # TODO Check that the file is a valid image
+        self.logo_drop_area.set_background(image_url)
+
+        self.default_on_logo_settings()
+        self.enable_logo_settings(False)
 
     def __init__(self, dirname, config: Config):
         """
@@ -203,8 +213,13 @@ class MainWindow(QMainWindow):
 
         self.logo_settings_default = QPushButton(_("Create PDF"))
         self.logo_settings_default.clicked.connect(self.create_logo_pdf)
-
         right_layout.addWidget(self.logo_settings_default)
+
+        # TODO show created pdf
+        self.logo_show_pdf = QPushButton(_("Show PDF"))
+        # self.logo_show_pdf.clicked.connect(self.show_pdf)
+        self.logo_show_pdf.setVisible(False)
+        right_layout.addWidget(self.logo_show_pdf)
 
         logo_settings_area = QGridLayout()
 
