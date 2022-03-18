@@ -1,0 +1,84 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2022-01-03 17:58+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: main.py:50
+msgid "Drag&Drop csv files here..."
+msgstr "Trascina qui i file csv..."
+
+#: main.py:59
+msgid "Single Label Sheet for Row"
+msgstr "Singola etichetta per riga"
+
+#: main.py:61
+msgid "Single Labels sheet for order"
+msgstr "Singola etichetta per ordine"
+
+#: main.py:63
+msgid "Single Labels Sheet for all"
+msgstr "Singolo  per tutti gli ordini"
+
+#: main.py:112
+msgid "File"
+msgstr "File"
+
+#: main.py:113
+msgid "Help"
+msgstr "Aiuto"
+
+#: main.py:134
+msgid "About"
+msgstr "Info"
+
+#: main.py:145
+msgid "Ready"
+msgstr "Pronto"
+
+msgid "Exit"
+msgstr "Esci"
+
+#: main.py:214
+msgid "Error creating the labels..."
+msgstr "Errore durante la creazione delle etichette..."
+
+#: main.py:218
+msgid "Error!"
+msgstr "Errore"
+
+#: main.py:220
+msgid ""
+"Cannot create the labels,\n"
+"please close all the labels viewer opened!"
+msgstr "Non posso creare le etichette,\n"
+"per favore chiudi le etichette aperte!"
+
+
+#: main.py:153
+msgid "In progress..."
+msgstr "In lavorazione..."
+
+#: main.py:166
+msgid "Done! Created {} labels..."
+msgstr "Fatto! Create {} etichette..."
+
+msgid "version"
+msgstr "Versione"
+
+msgid "author"
+msgstr "Autore"
+
+msgid "Info"
+msgstr ""

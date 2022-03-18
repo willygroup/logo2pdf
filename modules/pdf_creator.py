@@ -9,11 +9,11 @@ import PyPDF2
 
 
 class PdfCreator:
-    def __init__(self, dirname):
+    def __init__(self, dirname, logo_file):
         self.dirname = dirname
-        self.logo_file = os.path.join(dirname, "files", "logo.pdf")
-        self.output_dir = os.path.join(self.dirname, "files", "logo")
-        self.input_dir = os.path.join(self.dirname, "files", "nologo")
+        self.logo_file = logo_file
+        self.output_dir = os.path.join(self.dirname, "output", "logo")
+        self.input_dir = os.path.join(self.dirname, "output", "nologo")
         self.file_list = []
         self.from_directory = False
 
@@ -47,6 +47,9 @@ class PdfCreator:
         return n_files
 
     def create_watermark(self, input_pdf, output, watermark) -> bool:
+
+        print(watermark)
+
         try:
             watermark_obj = PdfFileReader(watermark)
             watermark_page = watermark_obj.getPage(0)
@@ -67,6 +70,8 @@ class PdfCreator:
                 page = pdf_reader.getPage(page)
                 page.mergePage(watermark_page)
                 pdf_writer.addPage(page)
+
+            print("output: {}".format(output))
 
             try:
                 with open(output, "wb") as out:
