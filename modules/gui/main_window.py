@@ -303,9 +303,13 @@ class MainWindow(QMainWindow):
         """
         Shows the About dialog
         """
+
+        logo_path = os.path.join(self.dirname, "files", "images", "icon.ico")
+
         dlg = QMessageBox(self)
         dlg.setWindowTitle(_("About"))
         dlg.setText(
+            f'<img src="{logo_path}" width="50" height="50">'
             f'<p style="text-align:center;"><big><b>{modules.__package_name__}</b></big></p>'
             f'<p style="text-align:right;"><i>{_("version")}:</i> {modules.__version__}<br/>'
             f'<i>{_("author")}:</i> willygroup@gmail.com<br/>'
