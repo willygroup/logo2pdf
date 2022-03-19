@@ -1,0 +1,10 @@
+{
+    "name": "hello",
+    "pdf_hash": "XXXX",
+    "image": {
+        "width": 123,
+        "height": 123,
+        "pos_x": 43,
+        "pos_y": 12
+    }
+}

@@ -21,6 +21,17 @@ def create_pdf_file(dest_filename, valid=True):
         )
 
 
+def create_metadata_file(dest_filename, valid=True):
+    if valid:
+        shutil.copyfile(
+            os.path.join(dirname, "test_files", "valid_metadata.json"), dest_filename
+        )
+    else:
+        shutil.copyfile(
+            os.path.join(dirname, "test_files", "invalid_metadata.json"), dest_filename
+        )
+
+
 def create_logo_file(dest_filename):
     shutil.copyfile(os.path.join(dirname, "test_files", "logo.pdf"), dest_filename)
 
