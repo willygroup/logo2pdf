@@ -11,7 +11,7 @@ class DropArea(QWidget):
             self.mimetype = ["application/pdf"]
         layout = QVBoxLayout()
         self.background = QLabel(text)
-        self.background.setStyleSheet("border :3px solid blue;")
+        self.background.setStyleSheet("border :2px solid black;")
 
         layout.addWidget(self.background)
 

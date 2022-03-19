@@ -36,7 +36,7 @@ class MainWindow(QMainWindow):
         # TODO copy the image in the `files/default/images/` directory ?
 
         output_file: str = str(self.logo_settings_name.text()) + ".pdf"
-        output_file = os.path.join("files", "default", "pdfs", output_file)
+        output_file = os.path.join("files", "logos", output_file)
 
         # TODO checks on the fields
         logo = PdfLogoCreator.create_pdf_logo_creator(
@@ -72,7 +72,7 @@ class MainWindow(QMainWindow):
         Set the default value for logo settings
         """
         self.logo_settings_default.setText(_("Create PDF"))
-        self.logo_settings_name.setText(_("logo_x"))
+        self.logo_settings_name.setText(_("name"))
         self.logo_settings_width.setText(_("50"))
         self.logo_settings_height.setText(_("50"))
         self.logo_settings_pos_x.setText(_("10"))
@@ -97,7 +97,7 @@ class MainWindow(QMainWindow):
         print("add_logo")
         # TODO read from self.default
         logo_file = os.path.join(
-            "files", "default", "pdfs", self.config.config_logo_name + ".pdf"
+            "files", "logos", self.config.config_logo_name + ".pdf"
         )
 
         pdf_creator = PdfCreator(self.dirname, logo_file)
@@ -147,7 +147,7 @@ class MainWindow(QMainWindow):
 
         print("image_name: {}", image_name)
 
-        image_url = os.path.join("files", "default", "images", image_name)
+        image_url = os.path.join("files", "logos", image_name)
 
         if new_default_logo:
             # TODO Save on config file
@@ -204,7 +204,8 @@ class MainWindow(QMainWindow):
 
         self.logo_drop_area = DropArea(_("Drag a logo here"), "image")
         self.logo_drop_area.set_size(100, 100)
-        self.logo_drop_area.set_background_color("red")
+        self.logo_drop_area.set_background_color("lightgrey")
+        self.logo_drop_area.setStyleSheet("border :2px solid darkgrey;")
 
         self.logo_drop_area.set_action(self.logo_action)
 
