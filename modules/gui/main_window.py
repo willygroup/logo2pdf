@@ -205,9 +205,10 @@ class MainWindow(QMainWindow):
         """
         Set as image of the logo the image dropped
         """
-        print(e.mimeData().text())
-        image_url = e.mimeData().urls()[0].toLocalFile()
         # TODO Check that the file is a valid image
+        print("mimedata: {}".format(e))
+
+        image_url = e.mimeData().urls()[0].toLocalFile()
         self.logo_drop_area.set_background_image(image_url)
         self.logo_image = image_url
 
