@@ -8,9 +8,9 @@ class DropArea(QWidget):
     def __init__(self, text, mimetype="image"):
         super().__init__()
         if mimetype == "image":
-            self.mimetype = ["image/png", "image/jpg", "image/jpeg"]
+            self.mimetypes = ["image/png", "image/jpg", "image/jpeg"]
         else:
-            self.mimetype = ["application/pdf"]
+            self.mimetypes = ["application/pdf"]
         layout = QVBoxLayout()
         self.background = QLabel(text)
         self.background.setStyleSheet("border :2px solid black;")
@@ -39,7 +39,7 @@ class DropArea(QWidget):
         db = QMimeDatabase()
         for url in mimedata.urls():
             mimetype = db.mimeTypeForUrl(url)
-            if mimetype.name() == "application/pdf":
+            if mimetype.name() in self.mimetypes:
                 urls.append(url)
         return urls
 
@@ -52,17 +52,13 @@ class DropArea(QWidget):
 
     def dropEvent(self, event):
         # TODO filter file type
-        urls = self.find_pdf(event.mimeData())
-        if urls:
-            for url in urls:
-                print(url.toLocalFile())
-            event.accept()
-        else:
-            event.ignore()
+        urls = self.find_type(event.mimeData())
+        if len(urls) > 0:
+            if self.action:
+                event.accept()
+                self.action(urls)
 
-        print("dropEvent: {}".format(event))
-        if self.action:
-            self.action(event)
+        event.ignore()
 
     def set_action(self, action):
         self.action = action
