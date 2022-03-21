@@ -1,5 +1,6 @@
 from PySide2.QtWidgets import QWidget, QLabel, QVBoxLayout
 from PySide2 import QtCore
+from PySide2.QtGui import QPixmap
 
 
 class DropArea(QWidget):
@@ -12,17 +13,17 @@ class DropArea(QWidget):
         layout = QVBoxLayout()
         self.background = QLabel(text)
         self.background.setStyleSheet("border :2px solid black;")
+        self.background.setScaledContents(True)
 
         layout.addWidget(self.background)
 
         self.setLayout(layout)
         self.setAcceptDrops(True)
 
-    def set_background(self, image_filename):
+    def set_background_image(self, image_filename):
         self.background.setText("")
-        self.background.setStyleSheet(
-            "border-image: url({}) 0 0 0 0 stretch stretch;".format(image_filename)
-        )
+        pixmap = QPixmap(image_filename)
+        self.background.setPixmap(pixmap)
 
     def set_size(self, width, height):
         self.setFixedSize(width, height)
@@ -35,8 +36,8 @@ class DropArea(QWidget):
         e.accept()
 
     def dropEvent(self, e):
+        # TODO filter file type
         print("dropEvent")
-        # print(e.mimeData().text())
         if self.action:
             self.action(e)
 
