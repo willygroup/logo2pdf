@@ -48,8 +48,6 @@ class PdfCreator:
 
     def create_watermark(self, input_pdf, output, watermark) -> bool:
 
-        print(watermark)
-
         try:
             watermark_obj = PdfFileReader(watermark)
             watermark_page = watermark_obj.getPage(0)
