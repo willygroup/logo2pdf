@@ -22,9 +22,16 @@ class DropArea(QWidget):
         self.setAcceptDrops(True)
 
     def set_background_image(self, image_filename):
+        """
+        Set the background image of the drop area
+        """
         self.background.setText("")
         pixmap = QPixmap(image_filename)
-        self.background.setPixmap(pixmap)
+        if pixmap:
+
+            self.background.setPixmap(pixmap)
+            return (pixmap.width(), pixmap.height())
+        return None
 
     def set_size(self, width, height):
         self.setFixedSize(width, height)
@@ -34,7 +41,6 @@ class DropArea(QWidget):
         self.setStyleSheet("background-color: {}".format(color))
 
     def find_type(self, mimedata):
-        # TODO # FIXME
         urls = list()
         db = QMimeDatabase()
         for url in mimedata.urls():
@@ -44,14 +50,12 @@ class DropArea(QWidget):
         return urls
 
     def dragEnterEvent(self, event):
-        print("formats: {}".format(event.mimeData().formats()))
         if event.mimeData().hasUrls():
             event.accept()
         else:
             event.ignore()
 
     def dropEvent(self, event):
-        # TODO filter file type
         urls = self.find_type(event.mimeData())
         if len(urls) > 0:
             if self.action:

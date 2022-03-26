@@ -21,6 +21,7 @@ from modules import utils
 from modules.config import Config
 from modules.gui.drop_area import DropArea
 from modules.lang import _
+from modules.logo_metadata import LogoMetadata
 from modules.pdf_creator import PdfCreator
 from modules.pdf_logo_creator import PdfLogoCreator, Point
 
@@ -96,8 +97,6 @@ class MainWindow(QMainWindow):
         logo_settings_area.addWidget(self.logo_settings_pos_y, 4, 1)
         logo_settings_area.addWidget(QLabel("[mm]"), 4, 2)
 
-        # self.default_on_logo_settings()
-        # self.enable_logo_settings(False)
         self.set_default_logo()
 
         right_layout.addLayout(logo_settings_area)
@@ -114,7 +113,6 @@ class MainWindow(QMainWindow):
         Create a pdf from the image dropped with the settings specified
         """
 
-        # TODO
         output_file: str = str(self.logo_settings_name.text()) + ".pdf"
         output_file = os.path.join("files", "logos", output_file)
 
@@ -140,12 +138,27 @@ class MainWindow(QMainWindow):
             self.logo_settings_default.setEnabled(True)
             self.logo_show_pdf.setVisible(True)
 
-            print("logo_name: {}".format(self.config.config_logo_name))
             self.logo_settings_default.clicked.connect(
                 lambda: self.set_default_logo(
                     self.logo_image, self.logo_settings_name.text()
                 )
             )
+
+    def set_logo_settings_from_image(self, name, width, heigth):
+        """
+        Set the logo setting values from the data of the loaded image
+        """
+        # default width in mm:
+        d_width = 40
+        ratio = width / heigth
+        d_heigth = int(d_width / ratio)
+
+        self.logo_settings_default.setText(_("Create PDF"))
+        self.logo_settings_name.setText(name)
+        self.logo_settings_width.setText(str(d_width))
+        self.logo_settings_height.setText(str(d_heigth))
+        self.logo_settings_pos_x.setText(_("10"))
+        self.logo_settings_pos_y.setText(_("10"))
 
     def default_on_logo_settings(self):
         """
@@ -169,12 +182,11 @@ class MainWindow(QMainWindow):
         self.logo_settings_pos_x.setDisabled(not status)
         self.logo_settings_pos_y.setDisabled(not status)
 
-    def add_logo(self, e):
+    def add_logo(self, input_files):
         """
         Performs the add logo operation on the dropped files
         """
         # TODO check the file type
-        print("add_logo")
         # TODO read from self.default
         logo_file = os.path.join(
             "files", "logos", self.config.config_logo_name + ".pdf"
@@ -182,7 +194,6 @@ class MainWindow(QMainWindow):
 
         pdf_creator = PdfCreator(self.dirname, logo_file)
 
-        input_files = e.mimeData().urls()
         file_list = []
         for file in input_files:
             file_list.append(file.toLocalFile())
@@ -206,48 +217,65 @@ class MainWindow(QMainWindow):
         Set as image of the logo the image dropped
         """
         # TODO Check that the file is a valid image
-
+        width = 40
+        height = 40
         image_url = urls[0].toLocalFile()
-        self.logo_drop_area.set_background_image(image_url)
+        res = self.logo_drop_area.set_background_image(image_url)
+        if res:
+            width = res[0]
+            height = res[1]
         self.logo_image = image_url
+        self.set_logo_settings_from_image(
+            os.path.splitext(os.path.basename(image_url))[0], width, height
+        )
 
         self.enable_logo_settings(True)
-        self.default_on_logo_settings()
 
     def set_default_logo(self, image_logo_path=None, new_default_logo=None):
         """
         Set the default logo
         """
-        print("set_default_logo: {}".format(new_default_logo))
+
+        width = 50
+        height = 50
+
         if new_default_logo:
             image_name = new_default_logo + ".png"
             self.config.config_logo_name = new_default_logo
         else:
             image_name = self.config.config_logo_name + ".png"
-
-        print("image_name: {}", image_name)
+            # Todo load default data from json
 
         image_url = os.path.join(self.dirname, "files", "logos", image_name)
 
-        print("image_url: {}", image_url)
-
         if new_default_logo:
-            # TODO Save on config file
-            print("set_config: {}".format(new_default_logo))
             self.config.set_config(new_default_logo)
             res = self.config.write_config()
-            print("SAVING: {}".format(res))
 
-            # TODO Copy file in the directory
-            print(
-                "copy from {} to {}".format(
-                    image_logo_path,
-                    image_url,
-                )
-            )
             try:
                 shutil.copyfile(image_logo_path, image_url)
+
+                metadata = LogoMetadata(self.dirname, new_default_logo)
+
+                metadata.set_name(new_default_logo)
+
+                metadata.set_image_position(
+                    float(self.logo_settings_pos_x.text()),
+                    float(self.logo_settings_pos_y.text()),
+                )
+                metadata.set_image_size(
+                    int(self.logo_settings_width.text()),
+                    int(self.logo_settings_height.text()),
+                )
+                if not metadata.store_metadata():
+                    print("Error storing metadata")
+
             except shutil.SameFileError:
+                # TODO Show a dialog with a same name warning
+                self.enable_logo_settings(True)
+                self.logo_settings_default.setText(_("Create PDF"))
+                self.logo_settings_default.setEnabled(False)
+
                 pass
             except Exception as ex:
                 print("Exception: {}".format(type(ex).__name__))
@@ -255,9 +283,12 @@ class MainWindow(QMainWindow):
             self.logo_show_pdf.setVisible(False)
 
         # TODO Check that the file is a valid image
-        self.logo_drop_area.set_background_image(image_url)
+        res = self.logo_drop_area.set_background_image(image_url)
+        if res:
+            width = res[0]
+            height = res[1]
 
-        self.default_on_logo_settings()
+        self.set_logo_settings_from_image(self.config.config_logo_name, width, height)
         self.enable_logo_settings(False)
 
     def create_menu(

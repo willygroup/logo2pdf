@@ -14,6 +14,10 @@ class LogoMetadata:
         """
         self.file_path = os.path.join(dirname, "files", "logos", name + ".json")
 
+        default_values = '{"name":"","pdf_hash":"","image":{"width":30,"height":30,"pos_x":12,"pos_y":12}}'
+        # convert into JSON:
+        self.data = json.loads(default_values)
+
     def load_metadata(self) -> bool:
         """
         Load json from file
@@ -26,7 +30,6 @@ class LogoMetadata:
                     return False
                 return True
         except Exception as e:
-            print(type(e).__name__)
             return False
 
     def store_metadata(self) -> bool:
@@ -42,39 +45,39 @@ class LogoMetadata:
                 outfile.close()
                 return True
         except Exception as e:
-            print(type(e).__name__)
             return False
 
     def set_name(self, name: str):
         """
         Set metadata name
         """
-        if self.data["name"]:
+
+        if "name" in self.data:
             self.data["name"] = name
 
     def set_hash(self, hash: str):
         """
         Set metadata hash
         """
-        if self.data["pdf_hash"]:
+        if "pdf_hash" in self.data:
             self.data["pdf_hash"] = hash
 
     def set_image_size(self, width: int, height: int):
         """
         Set metadata image size
         """
-        if self.data["image"]:
-            if self.data["image"]["width"]:
+        if "image" in self.data:
+            if "width" in self.data["image"]:
                 self.data["image"]["width"] = width
-            if self.data["image"]["height"]:
-                self.data["image"]["height"] = width
+            if "height" in self.data["image"]:
+                self.data["image"]["height"] = height
 
     def set_image_position(self, x: int, y: int):
         """
         Set metadata position
         """
-        if self.data["image"]:
-            if self.data["image"]["pos_x"]:
+        if self.data and self.data["image"]:
+            if "pos_x" in self.data["image"]:
                 self.data["image"]["pos_x"] = x
-            if self.data["image"]["pos_y"]:
+            if "pos_y" in self.data["image"]:
                 self.data["image"]["pos_y"] = y
