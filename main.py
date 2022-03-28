@@ -47,7 +47,6 @@ def execute_from_commandline():
     """
     Execute the app as a script from commandline
     """
-    create_environment(dirname)
 
     # TODO load logo from config
 
@@ -78,6 +77,9 @@ if __name__ == "__main__":
     except getopt.GetoptError:
         print("main.py --headless")
         sys.exit(2)
+
+    create_environment(dirname)
+
     if len(opts) > 0:
         for opt, arg in opts:
             if opt == "--headless":
