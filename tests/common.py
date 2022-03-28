@@ -21,6 +21,17 @@ def create_pdf_file(dest_filename, valid=True):
         )
 
 
+def create_config_file(dest_filename, valid=True):
+    if valid:
+        shutil.copyfile(
+            os.path.join(dirname, "test_files", "config.conf"), dest_filename
+        )
+    else:
+        shutil.copyfile(
+            os.path.join(dirname, "test_files", "bad_config.conf"), dest_filename
+        )
+
+
 def create_metadata_file(dest_filename, valid=True):
     if valid:
         shutil.copyfile(

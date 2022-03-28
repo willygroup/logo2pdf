@@ -50,6 +50,8 @@ def execute_from_commandline():
     create_environment(dirname)
 
     # TODO load logo from config
+
+    # TODO logo pdf as argument (--logofile my_logo.pdf)
     logo_file = os.path.join("files", "logos", "willygroup.pdf")
     pdf_creator = PdfCreator(dirname, logo_file)
 
