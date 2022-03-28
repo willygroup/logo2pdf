@@ -244,7 +244,7 @@ class MainWindow(QMainWindow):
             self.config.config_logo_name = new_default_logo
         else:
             image_name = self.config.config_logo_name + ".png"
-            # Todo load default data from json
+            # Todo load default image data from json
 
         image_url = os.path.join(self.dirname, "files", "logos", image_name)
 
@@ -275,8 +275,6 @@ class MainWindow(QMainWindow):
                 self.enable_logo_settings(True)
                 self.logo_settings_default.setText(_("Create PDF"))
                 self.logo_settings_default.setEnabled(False)
-
-                pass
             except Exception as ex:
                 print("Exception: {}".format(type(ex).__name__))
 

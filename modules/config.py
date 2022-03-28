@@ -26,20 +26,8 @@ class Config:
         except IOError:
             # logger.error("error reading config file")
             return False
-        return True
-
-    def write_config(self):
-        """
-        Write the config on a file
-        """
-        try:
-            with open(self.filename, "w", encoding="UTF-8") as configfile:
-                data = configparser.ConfigParser()
-                data["DEFAULT"] = {"logo_name": self.config_logo_name}
-                data.write(configfile)
-                configfile.close()
-        except IOError:
-            # logger.error("error writing config file")
+        except Exception as ex:
+            print("Exception: {}".format(type(ex).__name__))
             return False
         return True
 
@@ -59,3 +47,18 @@ class Config:
         """
         self.config_logo_name = "willygroup"
         return self.write_config()
+
+    def write_config(self):
+        """
+        Write the config on a file
+        """
+        try:
+            with open(self.filename, "w", encoding="UTF-8") as configfile:
+                data = configparser.ConfigParser()
+                data["DEFAULT"] = {"logo_name": self.config_logo_name}
+                data.write(configfile)
+                configfile.close()
+        except IOError:
+            # logger.error("error writing config file")
+            return False
+        return True
