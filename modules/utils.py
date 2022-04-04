@@ -15,19 +15,21 @@ def create_environment(dirname):
     Prepare the execution environment
     """
 
-    logo_file = os.path.join(dirname, "output", "logo.pdf")
+    # TODO Check this method
+
+    # logo_file = os.path.join(dirname, "output", "logo.pdf")
     if not os.path.exists("files"):
-        os.makedirs("files")
+        sys.exit(1)
     if not os.path.exists(os.path.join(dirname, "output", "nologo")):
         os.makedirs(os.path.join(dirname, "output", "nologo"))
     if not os.path.exists(os.path.join(dirname, "output", "logo")):
         os.makedirs(os.path.join(dirname, "output", "logo"))
-    if not logo_file:
-        print("No files/logo.pdf file found!")
-        sys.exit(1)
-    if not PdfCreator.checks_valid_pdf(logo_file):
-        print("logo.pdf is not a valid pdf file!")
-        sys.exit(1)
+    # if not logo_file:
+    #     print("No files/logo.pdf file found!")
+    #     sys.exit(1)
+    # if not PdfCreator.checks_valid_pdf(logo_file):
+    #     print("logo.pdf is not a valid pdf file!")
+    #     sys.exit(1)
 
 
 def open_directory(directory):

@@ -47,7 +47,6 @@ def execute_from_commandline():
     """
     Execute the app as a script from commandline
     """
-    create_environment(dirname)
 
     # TODO load logo from config
 
@@ -55,10 +54,10 @@ def execute_from_commandline():
     logo_file = os.path.join("files", "logos", "willygroup.pdf")
     pdf_creator = PdfCreator(dirname, logo_file)
 
-    if len(sys.argv) == 1:
+    if len(sys.argv) == 2:
         # process folder
         pdf_creator.read_directory_content()
-    elif len(sys.argv) > 1:
+    elif len(sys.argv) > 2:
         files = sys.argv
         files.remove(files[0])  # removing the executable file name
         pdf_creator.set_file_list(files)
@@ -73,11 +72,15 @@ def execute_from_commandline():
 
 
 if __name__ == "__main__":
+    # TODO get also the directory or the file list
     try:
         opts, args = getopt.getopt(sys.argv[1:], "h:", ["help", "headless"])
     except getopt.GetoptError:
         print("main.py --headless")
         sys.exit(2)
+
+    create_environment(dirname)
+
     if len(opts) > 0:
         for opt, arg in opts:
             if opt == "--headless":

@@ -242,17 +242,12 @@ class MainWindow(QMainWindow):
         if new_default_logo:
             image_name = new_default_logo + ".png"
             self.config.config_logo_name = new_default_logo
-        else:
-            image_name = self.config.config_logo_name + ".png"
-            # Todo load default image data from json
-
-        image_url = os.path.join(self.dirname, "files", "logos", image_name)
-
-        if new_default_logo:
+            
             self.config.set_config(new_default_logo)
             res = self.config.write_config()
 
             try:
+                image_url = os.path.join(self.dirname, "files", "logos", image_name)
                 shutil.copyfile(image_logo_path, image_url)
 
                 metadata = LogoMetadata(self.dirname, new_default_logo)
@@ -279,6 +274,11 @@ class MainWindow(QMainWindow):
                 print("Exception: {}".format(type(ex).__name__))
 
             self.logo_show_pdf.setVisible(False)
+
+        else:
+            image_name = self.config.config_logo_name + ".png"
+            # Todo load default image data from json
+        image_url = os.path.join(self.dirname, "files", "logos", image_name)
 
         # TODO Check that the file is a valid image
         res = self.logo_drop_area.set_background_image(image_url)
