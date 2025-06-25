@@ -2,6 +2,8 @@ import json
 import os
 from typing import Dict
 
+from modules.paths import Paths
+
 # import logging
 
 # logger = logging.getLogger("config_mod")
@@ -12,7 +14,7 @@ class LogoMetadata:
         """
         Initialize the LogoMetadata class
         """
-        self.file_path = os.path.join(dirname, "files", "logos", name + ".json")
+        self.file_path = Paths.logo(name+".json")
 
         default_values = '{"name":"","pdf_hash":"","image":{"width":30,"height":30,"pos_x":12,"pos_y":12}}'
         # convert into JSON:

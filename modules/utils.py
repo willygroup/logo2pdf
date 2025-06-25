@@ -7,6 +7,7 @@ import sys
 import os
 import subprocess
 
+from modules.paths import Paths
 from modules.pdf_creator import PdfCreator
 
 
@@ -15,13 +16,13 @@ def create_environment(dirname):
     Prepare the execution environment
     """
 
-    logo_file = os.path.join(dirname, "output", "logo.pdf")
+    logo_file = Paths.out("logo.pdf")
     if not os.path.exists("files"):
         os.makedirs("files")
-    if not os.path.exists(os.path.join(dirname, "output", "nologo")):
-        os.makedirs(os.path.join(dirname, "output", "nologo"))
-    if not os.path.exists(os.path.join(dirname, "output", "logo")):
-        os.makedirs(os.path.join(dirname, "output", "logo"))
+    if not os.path.exists(Paths.out("nologo")):
+        os.makedirs(Paths.out("nologo"))
+    if not os.path.exists(Paths.out("logo")):
+        os.makedirs(Paths.out("logo"))
     if not logo_file:
         print("No files/logo.pdf file found!")
         sys.exit(1)

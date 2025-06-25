@@ -10,13 +10,14 @@ import os
 import sys
 
 
-from PySide2.QtWidgets import (
+from PySide6.QtWidgets import (
     QApplication,
 )
 from modules import utils
 from modules.config import Config
 
 from modules.gui.main_window import MainWindow
+from modules.paths import Paths
 from modules.pdf_creator import PdfCreator
 from modules.utils import create_environment
 
@@ -33,11 +34,11 @@ else:
 def main():
 
     app = QApplication(sys.argv)
-    config = Config(dirname, os.path.join("files", "config.conf"))
+    config = Config(Paths.file("config.conf"))
     if config.load_config():
         window = MainWindow(dirname, config)
         window.show()
-        app.exec_()
+        app.exec()
     else:
         print("Error loading the config")
         sys.exit(1)
@@ -52,7 +53,7 @@ def execute_from_commandline():
     # TODO load logo from config
 
     # TODO logo pdf as argument (--logofile my_logo.pdf)
-    logo_file = os.path.join("files", "logos", "willygroup.pdf")
+    logo_file = Paths.logo("willygroup.pdf")
     pdf_creator = PdfCreator(dirname, logo_file)
 
     if len(sys.argv) == 1:
@@ -67,7 +68,7 @@ def execute_from_commandline():
 
     if processed_files > 0:
         print("{} files processed".format(processed_files))
-        utils.open_directory(os.path.join("output", "logo"))
+        utils.open_directory(Paths.out("logo"))
     else:
         print("No file processed")
 

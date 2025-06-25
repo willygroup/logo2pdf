@@ -2,8 +2,8 @@ import os
 import shutil
 import modules
 
-from PySide2.QtWidgets import (
-    QAction,
+
+from PySide6.QtWidgets import (
     QLabel,
     QMainWindow,
     QMessageBox,
@@ -15,13 +15,14 @@ from PySide2.QtWidgets import (
     QGridLayout,
     QLineEdit,
 )
-from PySide2.QtCore import Qt
-from PySide2.QtGui import QIcon
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QIcon, QAction
 from modules import utils
 from modules.config import Config
 from modules.gui.drop_area import DropArea
 from modules.lang import _
 from modules.logo_metadata import LogoMetadata
+from modules.paths import Paths
 from modules.pdf_creator import PdfCreator
 from modules.pdf_logo_creator import PdfLogoCreator, Point
 
@@ -114,7 +115,7 @@ class MainWindow(QMainWindow):
         """
 
         output_file: str = str(self.logo_settings_name.text()) + ".pdf"
-        output_file = os.path.join("files", "logos", output_file)
+        output_file = Paths.logo(output_file)
 
         # TODO checks on the fields
         logo = PdfLogoCreator.create_pdf_logo_creator(
@@ -188,9 +189,8 @@ class MainWindow(QMainWindow):
         """
         # TODO check the file type
         # TODO read from self.default
-        logo_file = os.path.join(
-            "files", "logos", self.config.config_logo_name + ".pdf"
-        )
+        logo_file = os.path.join(Paths.logo(
+            self.config.config_logo_name + ".pdf"))
 
         pdf_creator = PdfCreator(self.dirname, logo_file)
 
@@ -205,7 +205,7 @@ class MainWindow(QMainWindow):
         if processed_files > 0:
             print("{} files processed".format(processed_files))
             # TODO Open the output directory
-            utils.open_directory(os.path.join("output", "logo"))
+            utils.open_directory(Paths.out("logo"))
 
         else:
             print("No file processed")
@@ -286,7 +286,8 @@ class MainWindow(QMainWindow):
             width = res[0]
             height = res[1]
 
-        self.set_logo_settings_from_image(self.config.config_logo_name, width, height)
+        self.set_logo_settings_from_image(
+            self.config.config_logo_name, width, height)
         self.enable_logo_settings(False)
 
     def create_menu(

@@ -4,16 +4,18 @@ Provides methods to create PDFs
 
 import os
 
-from PyPDF2 import PdfFileWriter, PdfFileReader
+from PyPDF2 import PdfWriter,  PdfReader
 import PyPDF2
+
+from modules.paths import Paths
 
 
 class PdfCreator:
     def __init__(self, dirname, logo_file):
         self.dirname = dirname
         self.logo_file = logo_file
-        self.output_dir = os.path.join(self.dirname, "output", "logo")
-        self.input_dir = os.path.join(self.dirname, "output", "nologo")
+        self.output_dir = Paths.out("logo")
+        self.input_dir = Paths.out("nologo")
         self.file_list = []
         self.from_directory = False
 
@@ -34,7 +36,8 @@ class PdfCreator:
 
             input_file = file
             filename = os.path.basename(file)
-            output_file = "{0}_{2}.{1}".format(*filename.rsplit(".", 1), "logo")
+            output_file = "{0}_{2}.{1}".format(
+                *filename.rsplit(".", 1), "logo")
 
             output_file = os.path.join(self.output_dir, output_file)
             if self.create_watermark(
@@ -49,31 +52,33 @@ class PdfCreator:
     def create_watermark(self, input_pdf, output, watermark) -> bool:
 
         try:
-            watermark_obj = PdfFileReader(watermark)
-            watermark_page = watermark_obj.getPage(0)
-        except Exception:
-            print("failed to load watermark file")
+            watermark_obj = PdfReader(watermark)
+            watermark_page = watermark_obj.pages[0]
+        except Exception as e:
+            print("failed to load watermark file: ", watermark)
+            print(e)
             return False
 
         with open(input_pdf, "rb") as pdf:
             try:
-                pdf_reader = PdfFileReader(pdf)
-                pdf_writer = PdfFileWriter()
-            except Exception:
-                print("failed to initialize pdf_reader or writer")
+                pdf_reader = PdfReader(pdf)
+                pdf_writer = PdfWriter()
+            except Exception as e:
+                print("failed to initialize pdf_reader or writer: ", e)
                 return False
 
             # Watermark all the pages
-            for page in range(pdf_reader.getNumPages()):
-                page = pdf_reader.getPage(page)
-                page.mergePage(watermark_page)
-                pdf_writer.addPage(page)
+            for page in range(len(pdf_reader.pages)):
+                page = pdf_reader.pages[page]
+                page.merge_page(watermark_page)
+                pdf_writer.add_page(page)
 
             print("output: {}".format(output))
 
             try:
                 with open(output, "wb") as out:
-                    pdf_writer.write(out)
+                    res = pdf_writer.write(out)
+
                     return True
             except Exception:
                 print("Error writing to pdf output file")
