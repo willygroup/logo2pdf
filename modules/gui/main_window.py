@@ -45,8 +45,11 @@ class MainWindow(QMainWindow):
         main_layout = QHBoxLayout()
 
         self.pdf_drop_area = DropArea(_("Drag pdf files here!"), "pdf")
+        self.pdf_drop_area.background.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.pdf_drop_area.set_size(300, 300)
-        self.pdf_drop_area.set_background_color("darkgrey")
+        self.pdf_drop_area.set_background_color("lightgrey")
+        
+        # self.pdf_drop_area.set_background_image(QImage(Paths.image("dragpdf.png"))) #TODO Create a background image
         self.pdf_drop_area.set_action(self.add_logo)
 
         main_layout.addWidget(self.pdf_drop_area)
@@ -61,7 +64,7 @@ class MainWindow(QMainWindow):
         self.logo_drop_area.set_action(self.logo_action)
 
         right_layout.addWidget(self.logo_drop_area)
-        right_layout.setAlignment(self.logo_drop_area, Qt.AlignHCenter)
+        right_layout.setAlignment(self.logo_drop_area, Qt.AlignmentFlag.AlignHCenter)
 
         self.logo_settings_default = QPushButton(_("Create PDF"))
         self.logo_settings_default.clicked.connect(self.create_logo_pdf)
