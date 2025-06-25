@@ -1,11 +1,15 @@
 import gettext
 import locale
-import os
+
+from modules.paths import Paths
 
 current_locale, _ = locale.getlocale()
 if current_locale == "Italian_Italy":
     current_locale = "it_IT"
-locale_path = os.path.join("files", "locale")
+else:
+    current_locale = "en_US"
+
+locale_path = Paths.locales
 dictionary = gettext.translation("logo2pdf", locale_path, [current_locale])
 dictionary.install()
 _ = dictionary.gettext

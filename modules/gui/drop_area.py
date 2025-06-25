@@ -1,7 +1,7 @@
-from PySide2.QtWidgets import QWidget, QLabel, QVBoxLayout
-from PySide2 import QtCore
-from PySide2.QtGui import QPixmap
-from PySide2.QtCore import QMimeDatabase
+from PySide6.QtWidgets import QWidget, QLabel, QVBoxLayout
+from PySide6 import QtCore
+from PySide6.QtGui import QPixmap
+from PySide6.QtCore import QMimeDatabase
 
 
 class DropArea(QWidget):

@@ -10,34 +10,27 @@ import os
 import sys
 
 
-from PySide2.QtWidgets import (
+from PySide6.QtWidgets import (
     QApplication,
 )
 from modules import utils
 from modules.config import Config
 
 from modules.gui.main_window import MainWindow
+from modules.paths import Paths
 from modules.pdf_creator import PdfCreator
 from modules.utils import create_environment
 
-
-if getattr(sys, "frozen", False):
-    # If the application is run as a bundle, the PyInstaller bootloader
-    # extends the sys module by a flag frozen=True and sets the app
-    # path into variable _MEIPASS'.
-    dirname = sys._MEIPASS
-else:
-    dirname = os.path.dirname(os.path.abspath(__file__))
 
 
 def main():
 
     app = QApplication(sys.argv)
-    config = Config(dirname, os.path.join("files", "config.conf"))
+    config = Config(Paths.file("config.conf"))
     if config.load_config():
-        window = MainWindow(dirname, config)
+        window = MainWindow( config)
         window.show()
-        app.exec_()
+        app.exec()
     else:
         print("Error loading the config")
         sys.exit(1)
@@ -47,13 +40,13 @@ def execute_from_commandline():
     """
     Execute the app as a script from commandline
     """
-    create_environment(dirname)
+    
 
     # TODO load logo from config
 
     # TODO logo pdf as argument (--logofile my_logo.pdf)
-    logo_file = os.path.join("files", "logos", "willygroup.pdf")
-    pdf_creator = PdfCreator(dirname, logo_file)
+    logo_file = Paths.logo("willygroup.pdf")
+    pdf_creator = PdfCreator( logo_file)
 
     if len(sys.argv) == 1:
         # process folder
@@ -67,7 +60,7 @@ def execute_from_commandline():
 
     if processed_files > 0:
         print("{} files processed".format(processed_files))
-        utils.open_directory(os.path.join("output", "logo"))
+        utils.open_directory(Paths.out("logo"))
     else:
         print("No file processed")
 
@@ -78,6 +71,13 @@ if __name__ == "__main__":
     except getopt.GetoptError:
         print("main.py --headless")
         sys.exit(2)
+    
+    try:
+        create_environment()
+    except Exception as e:
+        print(e)
+        sys.exit(2)
+
     if len(opts) > 0:
         for opt, arg in opts:
             if opt == "--headless":

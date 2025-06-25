@@ -6,11 +6,10 @@ import configparser
 
 
 class Config:
-    def __init__(self, dirname, filename):
+    def __init__(self, filename):
         """
         Initialize the Config class
         """
-        self.dirname = dirname
         self.filename = filename
 
     def load_config(self):

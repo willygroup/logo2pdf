@@ -2,8 +2,8 @@ import os
 import shutil
 import modules
 
-from PySide2.QtWidgets import (
-    QAction,
+
+from PySide6.QtWidgets import (
     QLabel,
     QMainWindow,
     QMessageBox,
@@ -15,25 +15,27 @@ from PySide2.QtWidgets import (
     QGridLayout,
     QLineEdit,
 )
-from PySide2.QtCore import Qt
-from PySide2.QtGui import QIcon
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QIcon, QAction
 from modules import utils
 from modules.config import Config
 from modules.gui.drop_area import DropArea
 from modules.lang import _
 from modules.logo_metadata import LogoMetadata
+from modules.paths import Paths
 from modules.pdf_creator import PdfCreator
 from modules.pdf_logo_creator import PdfLogoCreator, Point
 
 
+
+
 class MainWindow(QMainWindow):
-    def __init__(self, dirname, config: Config):
+    def __init__(self,  config: Config):
         """
         App MainWindow
         """
         super().__init__()
 
-        self.dirname = dirname
         self.config = config
 
         self.set_icon()
@@ -114,7 +116,7 @@ class MainWindow(QMainWindow):
         """
 
         output_file: str = str(self.logo_settings_name.text()) + ".pdf"
-        output_file = os.path.join("files", "logos", output_file)
+        output_file = Paths.logo(output_file)
 
         # TODO checks on the fields
         logo = PdfLogoCreator.create_pdf_logo_creator(
@@ -188,11 +190,10 @@ class MainWindow(QMainWindow):
         """
         # TODO check the file type
         # TODO read from self.default
-        logo_file = os.path.join(
-            "files", "logos", self.config.config_logo_name + ".pdf"
-        )
+        logo_file = os.path.join(Paths.logo(
+            self.config.config_logo_name + ".pdf"))
 
-        pdf_creator = PdfCreator(self.dirname, logo_file)
+        pdf_creator = PdfCreator( logo_file)
 
         file_list = []
         for file in input_files:
@@ -205,7 +206,7 @@ class MainWindow(QMainWindow):
         if processed_files > 0:
             print("{} files processed".format(processed_files))
             # TODO Open the output directory
-            utils.open_directory(os.path.join("output", "logo"))
+            utils.open_directory(Paths.out("logo"))
 
         else:
             print("No file processed")
@@ -246,7 +247,7 @@ class MainWindow(QMainWindow):
             image_name = self.config.config_logo_name + ".png"
             # Todo load default image data from json
 
-        image_url = os.path.join(self.dirname, "files", "logos", image_name)
+        image_url = Paths.logo( image_name)
 
         if new_default_logo:
             self.config.set_config(new_default_logo)
@@ -255,13 +256,13 @@ class MainWindow(QMainWindow):
             try:
                 shutil.copyfile(image_logo_path, image_url)
 
-                metadata = LogoMetadata(self.dirname, new_default_logo)
+                metadata = LogoMetadata(Paths.base, new_default_logo)
 
                 metadata.set_name(new_default_logo)
 
                 metadata.set_image_position(
-                    float(self.logo_settings_pos_x.text()),
-                    float(self.logo_settings_pos_y.text()),
+                    int(self.logo_settings_pos_x.text()),
+                    int(self.logo_settings_pos_y.text()),
                 )
                 metadata.set_image_size(
                     int(self.logo_settings_width.text()),
@@ -286,7 +287,8 @@ class MainWindow(QMainWindow):
             width = res[0]
             height = res[1]
 
-        self.set_logo_settings_from_image(self.config.config_logo_name, width, height)
+        self.set_logo_settings_from_image(
+            self.config.config_logo_name, width, height)
         self.enable_logo_settings(False)
 
     def create_menu(
@@ -333,7 +335,7 @@ class MainWindow(QMainWindow):
         Shows the About dialog
         """
 
-        logo_path = os.path.join(self.dirname, "files", "images", "icon.ico")
+        logo_path = Paths.image("icon.ico")
 
         dlg = QMessageBox(self)
         dlg.setWindowTitle(_("About"))
@@ -341,20 +343,20 @@ class MainWindow(QMainWindow):
             f'<img src="{logo_path}" width="50" height="50">'
             f'<p style="text-align:center;"><big><b>{modules.__package_name__}</b></big></p>'
             f'<p style="text-align:right;"><i>{_("version")}:</i> {modules.__version__}<br/>'
-            f'<i>{_("author")}:</i> willygroup@gmail.com<br/>'
+            f'<i>{_("author")}:</i> Daniele Forti (willygroup@gmail.com)<br/>'
         )
         dlg.show()
 
     # def edit_settings(self):
     #     settings_dialog = SettingsDialog(self)
-    #     settings_dialog.draw(dirname, self.config)
+    #     settings_dialog.draw( self.config)
     #     settings_dialog.show()
 
     def set_icon(self):
         """
         Sets the App icon
         """
-        appIcon = QIcon(os.path.join(self.dirname, "files", "images/icon.png"))
+        appIcon = QIcon(Paths.image("icon.png"))
         self.setWindowIcon(appIcon)
 
     def create_status_bar(self):

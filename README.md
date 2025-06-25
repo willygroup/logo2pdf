@@ -13,7 +13,7 @@ Add logo to PDF files
 
 ## Usage
  - File list from directory:
-   - Place the files you need to add the logo to in the *files/nologo* directory
+   - Place the files you need to add the logo to in the *output/nologo* directory
    - Copy a pdf file with your logo in *files/logo.pdf* (overwrite the existing file if necessary)
    - Run the program
    - Check the *files/logo* directory for the new pdf files with you logo
