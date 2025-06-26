@@ -63,7 +63,8 @@ class PdfCreator:
                 pdf_reader = PdfReader(pdf)
                 pdf_writer = PdfWriter()
             except Exception as e:
-                print("failed to initialize pdf_reader or writer: ", e)
+                print("failed to initialize pdf_reader or writer: ", input_pdf)
+                print(e)
                 return False
 
             # Watermark all the pages

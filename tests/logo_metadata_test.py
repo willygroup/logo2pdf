@@ -4,6 +4,7 @@ import json
 
 from modules.logo_metadata import LogoMetadata
 
+from modules.paths import Paths
 from tests.common import (
     create_directory,
     create_metadata_file,
@@ -12,7 +13,7 @@ from tests.common import (
 )
 
 
-class LogoMetadataMethods(unittest.TestCase):
+class TestLogoMetadataMethods(unittest.TestCase):
     """
     Testing LogoMetadata
     """
@@ -24,14 +25,17 @@ class LogoMetadataMethods(unittest.TestCase):
         logo_name = "xxx"
 
         tmp_dir = prepare_env("logo_metadata_init")
+        Paths.init(tmp_dir)
         try:
-            logo_metadata = LogoMetadata(tmp_dir, logo_name)
+            logo_metadata = LogoMetadata(logo_name)
 
             self.assertEqual(
                 logo_metadata.file_path,
                 os.path.join(tmp_dir, "files", "logos", logo_name + ".json"),
             )
-
+        except Exception as e:
+            print(e)
+            self.fail()
         finally:
             restore_env(tmp_dir)
 
@@ -43,11 +47,13 @@ class LogoMetadataMethods(unittest.TestCase):
 
         tmp_dir = prepare_env("logo_metadata_load")
         try:
-            logo_metadata = LogoMetadata(tmp_dir, logo_name)
+            logo_metadata = LogoMetadata(logo_name)
             res = logo_metadata.load_metadata()
 
             self.assertFalse(res)
-
+        except Exception as e:
+            print(e)
+            self.fail()
         finally:
             restore_env(tmp_dir)
 
@@ -65,11 +71,13 @@ class LogoMetadataMethods(unittest.TestCase):
         )
 
         try:
-            logo_metadata = LogoMetadata(tmp_dir, logo_name)
+            logo_metadata = LogoMetadata(logo_name)
             res = logo_metadata.load_metadata()
 
             self.assertFalse(res)
-
+        except Exception as e:
+            print(e)
+            self.fail()
         finally:
             restore_env(tmp_dir)
 
@@ -78,22 +86,25 @@ class LogoMetadataMethods(unittest.TestCase):
         LoadMetadata valid json
         """
         tmp_dir = prepare_env("logo_metadata_load")
+        Paths.init(tmp_dir)
 
         logo_name = "xxx"
-        create_directory(os.path.join(tmp_dir, "files"))
-        create_directory(os.path.join(tmp_dir, "files", "logos"))
+        create_directory(Paths.files)
+        create_directory(Paths.logos)
         create_metadata_file(
-            os.path.join(tmp_dir, "files", "logos", logo_name + ".json"), True
+            Paths.logo(logo_name + ".json"), True
         )
 
         try:
-            logo_metadata = LogoMetadata(tmp_dir, logo_name)
+            logo_metadata = LogoMetadata(logo_name)
             res = logo_metadata.load_metadata()
 
             self.assertTrue(res)
             self.assertTrue(type(logo_metadata.data), type({}))
             self.assertEqual(logo_metadata.data["name"], "hello")
-
+        except Exception as e:
+            print(e)
+            self.fail()
         finally:
             restore_env(tmp_dir)
 
@@ -102,16 +113,16 @@ class LogoMetadataMethods(unittest.TestCase):
         StoreMetadata
         """
         tmp_dir = prepare_env("logo_metadata_load")
-
+        Paths.init(tmp_dir)
         logo_name = "store"
-        create_directory(os.path.join(tmp_dir, "files"))
-        create_directory(os.path.join(tmp_dir, "files", "logos"))
+        create_directory(Paths.files)
+        create_directory(Paths.logos)
         create_metadata_file(
-            os.path.join(tmp_dir, "files", "logos", logo_name + ".json"), True
+            Paths.logo(logo_name + ".json"), True
         )
 
         try:
-            logo_metadata = LogoMetadata(tmp_dir, logo_name)
+            logo_metadata = LogoMetadata(logo_name)
             res = logo_metadata.load_metadata()
 
             self.assertTrue(res)
@@ -119,12 +130,15 @@ class LogoMetadataMethods(unittest.TestCase):
             res = logo_metadata.store_metadata()
 
             with open(
-                os.path.join(tmp_dir, "files", "logos", logo_name + ".json"), "r"
+                Paths.logo(
+                    logo_name + ".json"), "r"
             ) as json_file:
                 json_struct = json.load(json_file)
                 self.assertTrue(json_struct["name"], "goodbye")
                 json_file.close()
-
+        except Exception as e:
+            print(e)
+            self.fail()
         finally:
             restore_env(tmp_dir)
 
@@ -133,16 +147,16 @@ class LogoMetadataMethods(unittest.TestCase):
         Metadata setters
         """
         tmp_dir = prepare_env("logo_metadata_load")
-
+        Paths.init(tmp_dir)
         logo_name = "store"
-        create_directory(os.path.join(tmp_dir, "files"))
-        create_directory(os.path.join(tmp_dir, "files", "logos"))
+        create_directory(Paths.files)
+        create_directory(Paths.logos)
         create_metadata_file(
-            os.path.join(tmp_dir, "files", "logos", logo_name + ".json"), True
+            Paths.logo(logo_name + ".json"), True
         )
 
         try:
-            logo_metadata = LogoMetadata(tmp_dir, logo_name)
+            logo_metadata = LogoMetadata(logo_name)
             res = logo_metadata.load_metadata()
 
             self.assertTrue(res)
@@ -155,7 +169,7 @@ class LogoMetadataMethods(unittest.TestCase):
             res = logo_metadata.store_metadata()
 
             with open(
-                os.path.join(tmp_dir, "files", "logos", logo_name + ".json"), "r"
+                Paths.logo(logo_name + ".json"), "r"
             ) as json_file:
                 json_struct = json.load(json_file)
                 self.assertTrue(json_struct["name"], "new_name")
@@ -165,7 +179,9 @@ class LogoMetadataMethods(unittest.TestCase):
                 self.assertTrue(json_struct["image"]["pos_x"], 25)
                 self.assertTrue(json_struct["image"]["pos_y"], 15)
                 json_file.close()
-
+        except Exception as e:
+            print(e)
+            self.fail()
         finally:
             restore_env(tmp_dir)
 

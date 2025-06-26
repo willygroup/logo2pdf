@@ -6,7 +6,7 @@ from modules.pdf_logo_creator import PdfLogoCreator, Point
 from tests.common import (
     prepare_env,
     restore_env,
-    dirname,
+    test_directory,
 )
 
 import os
@@ -24,7 +24,8 @@ class TestPdfLogoCreatorMethods(unittest.TestCase):
 
         tmp_dir = prepare_env("pdflogocreator")
 
-        image_file = os.path.join(dirname, "test_files", "image_logo.png")
+        image_file = os.path.join(
+            test_directory, "test_files", "image_logo.png")
         output_file = os.path.join(tmp_dir, "test.pdf")
 
         pdf_logo = PdfLogoCreator(
@@ -38,6 +39,11 @@ class TestPdfLogoCreatorMethods(unittest.TestCase):
         try:
             self.assertIsNotNone(pdf_logo)
             self.assertTrue(os.path.exists(output_file))
+
+        except Exception as e:
+            print(e)
+            self.fail()
+
         finally:
             restore_env(tmp_dir)
 
@@ -62,6 +68,10 @@ class TestPdfLogoCreatorMethods(unittest.TestCase):
         try:
             self.assertIsNone(pdf_logo)
             self.assertFalse(os.path.exists(output_file))
+        except Exception as e:
+            print(e)
+            self.fail()
+
         finally:
             restore_env(tmp_dir)
 
@@ -86,6 +96,11 @@ class TestPdfLogoCreatorMethods(unittest.TestCase):
         try:
             self.assertIsNone(pdf_logo)
             self.assertFalse(os.path.exists(output_file))
+
+        except Exception as e:
+            print(e)
+            self.fail()
+
         finally:
             restore_env(tmp_dir)
 

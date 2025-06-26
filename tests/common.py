@@ -2,7 +2,7 @@ import os
 import shutil
 import tempfile
 
-dirname = os.path.realpath(__file__).replace("common.py", "")
+test_directory = os.path.realpath(__file__).replace("common.py", "")
 
 
 def create_file(filename):
@@ -13,38 +13,45 @@ def create_file(filename):
 def create_pdf_file(dest_filename, valid=True):
     if valid:
         shutil.copyfile(
-            os.path.join(dirname, "test_files", "nologo_file.pdf"), dest_filename
+            os.path.join(test_directory, "test_files",
+                         "nologo_file.pdf"), dest_filename
         )
     else:
         shutil.copyfile(
-            os.path.join(dirname, "test_files", "invalid.pdf"), dest_filename
+            os.path.join(test_directory, "test_files",
+                         "invalid.pdf"), dest_filename
         )
 
 
 def create_config_file(dest_filename, valid=True):
     if valid:
         shutil.copyfile(
-            os.path.join(dirname, "test_files", "config.conf"), dest_filename
+            os.path.join(test_directory, "test_files",
+                         "config.conf"), dest_filename
         )
     else:
         shutil.copyfile(
-            os.path.join(dirname, "test_files", "bad_config.conf"), dest_filename
+            os.path.join(test_directory, "test_files",
+                         "bad_config.conf"), dest_filename
         )
 
 
 def create_metadata_file(dest_filename, valid=True):
     if valid:
         shutil.copyfile(
-            os.path.join(dirname, "test_files", "valid_metadata.json"), dest_filename
+            os.path.join(test_directory, "test_files",
+                         "valid_metadata.json"), dest_filename
         )
     else:
         shutil.copyfile(
-            os.path.join(dirname, "test_files", "invalid_metadata.json"), dest_filename
+            os.path.join(test_directory, "test_files",
+                         "invalid_metadata.json"), dest_filename
         )
 
 
 def create_logo_file(dest_filename):
-    shutil.copyfile(os.path.join(dirname, "test_files", "logo.pdf"), dest_filename)
+    shutil.copyfile(os.path.join(
+        test_directory, "test_files", "logo.pdf"), dest_filename)
 
 
 def create_directory(pathname):

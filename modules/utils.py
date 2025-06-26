@@ -24,7 +24,7 @@ def create_environment():
     if not os.path.exists(Paths.out("logo")):
         os.makedirs(Paths.out("logo"))
     if not logo_file:
-        print("No files/logo.pdf file found!")
+        print("No {} file found!".format(logo_file))
         sys.exit(1)
     if not PdfCreator.checks_valid_pdf(logo_file):
         print("logo.pdf is not a valid pdf file!")

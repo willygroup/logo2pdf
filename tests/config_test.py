@@ -4,10 +4,8 @@ import unittest
 
 from tests.common import (
     create_config_file,
-    create_directory,
     prepare_env,
     restore_env,
-    dirname,
 )
 from modules.config import Config
 
@@ -23,16 +21,18 @@ class TestConfigMethods(unittest.TestCase):
         """
 
         tmp_dir = prepare_env("config_init")
-
         config_file = os.path.join(tmp_dir, "config.conf")
 
         create_config_file(config_file)
 
         try:
-            config = Config(tmp_dir, config_file)
+            config = Config(config_file)
 
-            self.assertEqual(config.dirname, tmp_dir)
             self.assertEqual(config.filename, config_file)
+
+        except Exception as e:
+            print(e)
+            self.fail()
 
         finally:
             restore_env(tmp_dir)
@@ -49,12 +49,16 @@ class TestConfigMethods(unittest.TestCase):
         create_config_file(config_file)
 
         try:
-            config = Config(tmp_dir, config_file)
+            config = Config(config_file)
 
             res = config.load_config()
 
             self.assertTrue(res)
             self.assertEqual(config.config_logo_name, "willygroup")
+
+        except Exception as e:
+            print(e)
+            self.fail()
 
         finally:
             restore_env(tmp_dir)
@@ -69,11 +73,15 @@ class TestConfigMethods(unittest.TestCase):
         config_file = os.path.join(tmp_dir, "config.conf")
 
         try:
-            config = Config(tmp_dir, config_file)
+            config = Config(config_file)
 
             res = config.load_config()
 
             self.assertFalse(res)
+
+        except Exception as e:
+            print(e)
+            self.fail()
 
         finally:
             restore_env(tmp_dir)
@@ -90,11 +98,15 @@ class TestConfigMethods(unittest.TestCase):
         create_config_file(config_file, False)
 
         try:
-            config = Config(tmp_dir, config_file)
+            config = Config(config_file)
 
             res = config.load_config()
 
             self.assertFalse(res)
+
+        except Exception as e:
+            print(e)
+            self.fail()
 
         finally:
             restore_env(tmp_dir)
@@ -104,16 +116,21 @@ class TestConfigMethods(unittest.TestCase):
         SetConfig method test with bad config file
         """
         tmp_dir = prepare_env("config_set_config")
+
         config_file = os.path.join(tmp_dir, "anyfile.conf")
 
         try:
 
-            config = Config("anydir", config_file)
+            config = Config(config_file)
 
             res = config.set_config("new_logo")
 
             self.assertTrue(res)
             self.assertEqual(config.config_logo_name, "new_logo")
+
+        except Exception as e:
+            print(e)
+            self.fail()
 
         finally:
             restore_env(tmp_dir)
@@ -128,7 +145,7 @@ class TestConfigMethods(unittest.TestCase):
         config_file = os.path.join(tmp_dir, "config.conf")
 
         try:
-            config = Config(tmp_dir, config_file)
+            config = Config(config_file)
 
             res = config.config_logo_name = "new_logo"
 
@@ -140,6 +157,10 @@ class TestConfigMethods(unittest.TestCase):
             self.assertTrue(res)
 
             self.assertTrue(os.path.isfile(config_file))
+
+        except Exception as e:
+            print(e)
+            self.fail()
 
         finally:
             restore_env(tmp_dir)
