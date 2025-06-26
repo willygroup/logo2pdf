@@ -2,6 +2,7 @@
     "name": "hello",
     "pdf_hash": "XXXX",
     "image": {
+        "aspect_ratio": true,
         "width": 123,
         "height": 123,
         "pos_x": 43,

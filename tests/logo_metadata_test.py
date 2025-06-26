@@ -163,7 +163,7 @@ class TestLogoMetadataMethods(unittest.TestCase):
 
             logo_metadata.set_name("new_name")
             logo_metadata.set_hash("new_hash")
-            logo_metadata.set_image_size(250, 150)
+            logo_metadata.set_image_size(False, 250, 150)
             logo_metadata.set_image_position(25, 15)
 
             res = logo_metadata.store_metadata()

@@ -1,7 +1,15 @@
 ChangeLog
 =========
 
-0.1.1 - unreleased
+
+0.2 - unreleased
+------------------
+* General refactoring
+* Added aspect ratio to logo creation from image
+* added Paths
+* Fixed test unit
+
+0.1.1 - skipped
 ------------------
 Changed:
 * app name into logo2pdf

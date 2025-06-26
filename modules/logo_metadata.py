@@ -16,7 +16,7 @@ class LogoMetadata:
         """
         self.file_path = Paths.logo(name+".json")
 
-        default_values = '{"name":"","pdf_hash":"","image":{"width":30,"height":30,"pos_x":12,"pos_y":12}}'
+        default_values = '{"name":"","pdf_hash":"","image":{"aspect_ratio":0,"width":30,"height":30,"pos_x":12,"pos_y":12}}'
         # convert into JSON:
         self.data = json.loads(default_values)
 
@@ -64,11 +64,13 @@ class LogoMetadata:
         if "pdf_hash" in self.data:
             self.data["pdf_hash"] = hash
 
-    def set_image_size(self, width: int, height: int):
+    def set_image_size(self, aspect_ratio: bool, width: int, height: int):
         """
         Set metadata image size
         """
         if "image" in self.data:
+            if "aspect_ratio" in self.data["image"]:
+                self.data["image"]["aspect_ratio"] = aspect_ratio
             if "width" in self.data["image"]:
                 self.data["image"]["width"] = width
             if "height" in self.data["image"]:

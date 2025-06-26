@@ -14,6 +14,7 @@ from PySide6.QtWidgets import (
     QWidget,
     QGridLayout,
     QLineEdit,
+    QCheckBox
 )
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QIcon, QAction
@@ -81,29 +82,44 @@ class MainWindow(QMainWindow):
 
         logo_settings_area = QGridLayout()
 
-        logo_settings_area.addWidget(QLabel(_("Name:")), 0, 0)
+        row = 0
+
+        logo_settings_area.addWidget(QLabel(_("Name:")), row, 0)
         self.logo_settings_name = QLineEdit()
-        logo_settings_area.addWidget(self.logo_settings_name, 0, 1)
+        logo_settings_area.addWidget(self.logo_settings_name, row, 1)
+        row = row+1
 
-        logo_settings_area.addWidget(QLabel(_("Width:")), 1, 0)
+        logo_settings_area.addWidget(QLabel(_("Keep Aspect Ratio:")), row, 0)
+        self.logo_settings_aspect_ratio = QCheckBox()
+        logo_settings_area.addWidget(self.logo_settings_aspect_ratio)
+        row = row+1
+        logo_settings_area.addWidget(QLabel(_("Width:")), row, 0)
         self.logo_settings_width = QLineEdit()
-        logo_settings_area.addWidget(self.logo_settings_width, 1, 1)
-        logo_settings_area.addWidget(QLabel("[mm]"), 1, 2)
+        self.logo_settings_width.textEdited.connect(
+            lambda: self.calculate_aspect_ratio("width"))
 
-        logo_settings_area.addWidget(QLabel(_("Height:")), 2, 0)
+        logo_settings_area.addWidget(self.logo_settings_width, row, 1)
+        logo_settings_area.addWidget(QLabel("[mm]"), row, 2)
+        row = row+1
+
+        logo_settings_area.addWidget(QLabel(_("Height:")), row, 0)
         self.logo_settings_height = QLineEdit()
-        logo_settings_area.addWidget(self.logo_settings_height, 2, 1)
-        logo_settings_area.addWidget(QLabel("[mm]"), 2, 2)
+        self.logo_settings_height.textEdited.connect(
+            lambda: self.calculate_aspect_ratio("height"))
+        logo_settings_area.addWidget(self.logo_settings_height, row, 1)
+        logo_settings_area.addWidget(QLabel("[mm]"), row, 2)
+        row = row+1
 
-        logo_settings_area.addWidget(QLabel(_("Pos. X:")), 3, 0)
+        logo_settings_area.addWidget(QLabel(_("Pos. X:")), row, 0)
         self.logo_settings_pos_x = QLineEdit()
-        logo_settings_area.addWidget(self.logo_settings_pos_x, 3, 1)
-        logo_settings_area.addWidget(QLabel("[mm]"), 3, 2)
+        logo_settings_area.addWidget(self.logo_settings_pos_x, row, 1)
+        logo_settings_area.addWidget(QLabel("[mm]"), row, 2)
+        row = row+1
 
-        logo_settings_area.addWidget(QLabel(_("Pos. Y:")), 4, 0)
+        logo_settings_area.addWidget(QLabel(_("Pos. Y:")), row, 0)
         self.logo_settings_pos_y = QLineEdit()
-        logo_settings_area.addWidget(self.logo_settings_pos_y, 4, 1)
-        logo_settings_area.addWidget(QLabel("[mm]"), 4, 2)
+        logo_settings_area.addWidget(self.logo_settings_pos_y, row, 1)
+        logo_settings_area.addWidget(QLabel("[mm]"), row, 2)
 
         self.set_default_logo()
 
@@ -115,6 +131,23 @@ class MainWindow(QMainWindow):
         main_widget.setLayout(main_layout)
 
         self.setCentralWidget(main_widget)
+
+    def calculate_aspect_ratio(self, caller: str):
+        print("caller: ", caller)
+        if self.logo_settings_aspect_ratio.isChecked():
+            if caller == "height":
+
+                height = int(self.logo_settings_height.text())
+                width = int(
+                    self.logo_settings_original_aspect_ratio*float(height))
+
+            elif caller == "width":
+                width = int(self.logo_settings_width.text())
+                height = int(
+                    self.logo_settings_original_aspect_ratio*float(width))
+
+            self.logo_settings_height.setText("{:d}".format(height))
+            self.logo_settings_width.setText("{:d}".format(width))
 
     def show_pdf_logo(self):
         utils.open_directory(Paths.logos)
@@ -155,12 +188,15 @@ class MainWindow(QMainWindow):
                 )
             )
 
-    def set_logo_settings(self, btn_text: str, name: str, width: str, height: str, pos_x: str, pos_y: str):
+    def set_logo_settings(self, btn_text: str, name: str, ar: bool, width: str, height: str, pos_x: str, pos_y: str):
         """
         Set the values for logo settings
         """
         self.logo_settings_default.setText(btn_text)
         self.logo_settings_name.setText(name)
+        self.logo_settings_aspect_ratio.setChecked(ar)
+        self.logo_settings_original_aspect_ratio = float(
+            int(width)/int(height))
         self.logo_settings_width.setText(width)
         self.logo_settings_height.setText(height)
         self.logo_settings_pos_x.setText(pos_x)
@@ -175,7 +211,7 @@ class MainWindow(QMainWindow):
         ratio = width / height
         d_height = int(d_width / ratio)
 
-        self.set_logo_settings(_("Create PDF"), name, str(
+        self.set_logo_settings(_("Create PDF"), name, False, str(
             d_width), str(d_height), "10", "10")
 
     def default_on_logo_settings(self):
@@ -183,7 +219,7 @@ class MainWindow(QMainWindow):
         Set the default value for logo settings
         """
 
-        self.set_logo_settings(_("Create PDF"), _("name"),
+        self.set_logo_settings(_("Create PDF"), _("name"), False,
                                "50", "50", "10", "10")
 
     def enable_logo_settings(self, status: bool):
@@ -192,6 +228,7 @@ class MainWindow(QMainWindow):
         """
         self.logo_settings_default.setDisabled(not status)
         self.logo_settings_name.setDisabled(not status)
+        self.logo_settings_aspect_ratio.setDisabled(not status)
         self.logo_settings_width.setDisabled(not status)
         self.logo_settings_height.setDisabled(not status)
         self.logo_settings_pos_x.setDisabled(not status)
@@ -279,6 +316,7 @@ class MainWindow(QMainWindow):
                     int(self.logo_settings_pos_y.text()),
                 )
                 metadata.set_image_size(
+                    self.logo_settings_aspect_ratio.isChecked(),
                     int(self.logo_settings_width.text()),
                     int(self.logo_settings_height.text()),
                 )
