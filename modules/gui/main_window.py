@@ -27,8 +27,6 @@ from modules.pdf_creator import PdfCreator
 from modules.pdf_logo_creator import PdfLogoCreator, Point
 
 
-
-
 class MainWindow(QMainWindow):
     def __init__(self,  config: Config):
         """
@@ -45,16 +43,20 @@ class MainWindow(QMainWindow):
         main_layout = QHBoxLayout()
 
         self.pdf_drop_area = DropArea(_("Drag pdf files here!"), "pdf")
-        self.pdf_drop_area.background.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.pdf_drop_area.background.setAlignment(
+            Qt.AlignmentFlag.AlignCenter)
         self.pdf_drop_area.set_size(300, 300)
         self.pdf_drop_area.set_background_color("lightgrey")
-        
+
         # self.pdf_drop_area.set_background_image(QImage(Paths.image("dragpdf.png"))) #TODO Create a background image
         self.pdf_drop_area.set_action(self.add_logo)
 
         main_layout.addWidget(self.pdf_drop_area)
 
         right_layout = QVBoxLayout()
+        label = QLabel("<i>"+_("Drag a logo (png) into the box below!")+"</i>")
+        label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        right_layout.addWidget(label)
 
         self.logo_drop_area = DropArea(_("Drag a logo here"), "image")
         self.logo_drop_area.set_size(100, 100)
@@ -64,16 +66,17 @@ class MainWindow(QMainWindow):
         self.logo_drop_area.set_action(self.logo_action)
 
         right_layout.addWidget(self.logo_drop_area)
-        right_layout.setAlignment(self.logo_drop_area, Qt.AlignmentFlag.AlignHCenter)
+        right_layout.setAlignment(
+            self.logo_drop_area, Qt.AlignmentFlag.AlignHCenter)
 
         self.logo_settings_default = QPushButton(_("Create PDF"))
         self.logo_settings_default.clicked.connect(self.create_logo_pdf)
         right_layout.addWidget(self.logo_settings_default)
 
         # TODO show created pdf
-        self.logo_show_pdf = QPushButton(_("Show PDF"))
-        # self.logo_show_pdf.clicked.connect(self.show_pdf)
-        self.logo_show_pdf.setVisible(False)
+        self.logo_show_pdf = QPushButton(_("Show PDF Logo"))
+        self.logo_show_pdf.clicked.connect(self.show_pdf_logo)
+        self.logo_show_pdf.setEnabled(False)
         right_layout.addWidget(self.logo_show_pdf)
 
         logo_settings_area = QGridLayout()
@@ -113,6 +116,9 @@ class MainWindow(QMainWindow):
 
         self.setCentralWidget(main_widget)
 
+    def show_pdf_logo(self):
+        utils.open_directory(Paths.logos)
+
     def create_logo_pdf(self):
         """
         Create a pdf from the image dropped with the settings specified
@@ -141,7 +147,7 @@ class MainWindow(QMainWindow):
             self.enable_logo_settings(False)
             self.logo_settings_default.setText(_("Set as Default"))
             self.logo_settings_default.setEnabled(True)
-            self.logo_show_pdf.setVisible(True)
+            self.logo_show_pdf.setEnabled(True)
 
             self.logo_settings_default.clicked.connect(
                 lambda: self.set_default_logo(
@@ -149,32 +155,36 @@ class MainWindow(QMainWindow):
                 )
             )
 
-    def set_logo_settings_from_image(self, name, width, heigth):
+    def set_logo_settings(self, btn_text: str, name: str, width: str, height: str, pos_x: str, pos_y: str):
+        """
+        Set the values for logo settings
+        """
+        self.logo_settings_default.setText(btn_text)
+        self.logo_settings_name.setText(name)
+        self.logo_settings_width.setText(width)
+        self.logo_settings_height.setText(height)
+        self.logo_settings_pos_x.setText(pos_x)
+        self.logo_settings_pos_y.setText(pos_y)
+
+    def set_logo_settings_from_image(self, name, width, height):
         """
         Set the logo setting values from the data of the loaded image
         """
         # default width in mm:
         d_width = 40
-        ratio = width / heigth
-        d_heigth = int(d_width / ratio)
+        ratio = width / height
+        d_height = int(d_width / ratio)
 
-        self.logo_settings_default.setText(_("Create PDF"))
-        self.logo_settings_name.setText(name)
-        self.logo_settings_width.setText(str(d_width))
-        self.logo_settings_height.setText(str(d_heigth))
-        self.logo_settings_pos_x.setText(_("10"))
-        self.logo_settings_pos_y.setText(_("10"))
+        self.set_logo_settings(_("Create PDF"), name, str(
+            d_width), str(d_height), "10", "10")
 
     def default_on_logo_settings(self):
         """
         Set the default value for logo settings
         """
-        self.logo_settings_default.setText(_("Create PDF"))
-        self.logo_settings_name.setText(_("name"))
-        self.logo_settings_width.setText(_("50"))
-        self.logo_settings_height.setText(_("50"))
-        self.logo_settings_pos_x.setText(_("10"))
-        self.logo_settings_pos_y.setText(_("10"))
+
+        self.set_logo_settings(_("Create PDF"), _("name"),
+                               "50", "50", "10", "10")
 
     def enable_logo_settings(self, status: bool):
         """
@@ -196,7 +206,7 @@ class MainWindow(QMainWindow):
         logo_file = os.path.join(Paths.logo(
             self.config.config_logo_name + ".pdf"))
 
-        pdf_creator = PdfCreator( logo_file)
+        pdf_creator = PdfCreator(logo_file)
 
         file_list = []
         for file in input_files:
@@ -207,11 +217,12 @@ class MainWindow(QMainWindow):
         processed_files = pdf_creator.process_files()
 
         if processed_files > 0:
+            # TODO Write on Status Bar
             print("{} files processed".format(processed_files))
-            # TODO Open the output directory
             utils.open_directory(Paths.out("logo"))
 
         else:
+            # TODO Write on Status Bar
             print("No file processed")
 
         pass
@@ -250,7 +261,7 @@ class MainWindow(QMainWindow):
             image_name = self.config.config_logo_name + ".png"
             # Todo load default image data from json
 
-        image_url = Paths.logo( image_name)
+        image_url = Paths.logo(image_name)
 
         if new_default_logo:
             self.config.set_config(new_default_logo)
@@ -259,7 +270,7 @@ class MainWindow(QMainWindow):
             try:
                 shutil.copyfile(image_logo_path, image_url)
 
-                metadata = LogoMetadata(Paths.base, new_default_logo)
+                metadata = LogoMetadata(new_default_logo)
 
                 metadata.set_name(new_default_logo)
 
@@ -280,9 +291,10 @@ class MainWindow(QMainWindow):
                 self.logo_settings_default.setText(_("Create PDF"))
                 self.logo_settings_default.setEnabled(False)
             except Exception as ex:
-                print("Exception: {}".format(type(ex).__name__))
+                print("Exception 1: {}".format(type(ex).__name__))
+                print(ex)
 
-            self.logo_show_pdf.setVisible(False)
+            self.logo_show_pdf.setEnabled(False)
 
         # TODO Check that the file is a valid image
         res = self.logo_drop_area.set_background_image(image_url)
