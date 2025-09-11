@@ -29,9 +29,8 @@ class TestConfigMethods(unittest.TestCase):
         create_config_file(config_file)
 
         try:
-            config = Config(tmp_dir, config_file)
+            config = Config(config_file)
 
-            self.assertEqual(config.dirname, tmp_dir)
             self.assertEqual(config.filename, config_file)
 
         finally:

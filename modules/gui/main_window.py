@@ -27,10 +27,8 @@ from modules.pdf_creator import PdfCreator
 from modules.pdf_logo_creator import PdfLogoCreator, Point
 
 
-
-
 class MainWindow(QMainWindow):
-    def __init__(self,  config: Config):
+    def __init__(self, config: Config):
         """
         App MainWindow
         """
@@ -48,7 +46,7 @@ class MainWindow(QMainWindow):
         self.pdf_drop_area.background.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.pdf_drop_area.set_size(300, 300)
         self.pdf_drop_area.set_background_color("lightgrey")
-        
+
         # self.pdf_drop_area.set_background_image(QImage(Paths.image("dragpdf.png"))) #TODO Create a background image
         self.pdf_drop_area.set_action(self.add_logo)
 
@@ -193,10 +191,9 @@ class MainWindow(QMainWindow):
         """
         # TODO check the file type
         # TODO read from self.default
-        logo_file = os.path.join(Paths.logo(
-            self.config.config_logo_name + ".pdf"))
+        logo_file = os.path.join(Paths.logo(self.config.config_logo_name + ".pdf"))
 
-        pdf_creator = PdfCreator( logo_file)
+        pdf_creator = PdfCreator(logo_file)
 
         file_list = []
         for file in input_files:
@@ -235,7 +232,9 @@ class MainWindow(QMainWindow):
 
         self.enable_logo_settings(True)
 
-    def set_default_logo(self, image_logo_path=None, new_default_logo=None):
+    def set_default_logo(
+        self, image_logo_path: None | str = None, new_default_logo: None | str = None
+    ):
         """
         Set the default logo
         """
@@ -250,16 +249,16 @@ class MainWindow(QMainWindow):
             image_name = self.config.config_logo_name + ".png"
             # Todo load default image data from json
 
-        image_url = Paths.logo( image_name)
+        image_url = Paths.logo(image_name)
 
         if new_default_logo:
             self.config.set_config(new_default_logo)
             res = self.config.write_config()
 
             try:
-                shutil.copyfile(image_logo_path, image_url)
+                shutil.copyfile(str(image_logo_path), image_url)
 
-                metadata = LogoMetadata(Paths.base, new_default_logo)
+                metadata = LogoMetadata(new_default_logo)
 
                 metadata.set_name(new_default_logo)
 
@@ -290,8 +289,7 @@ class MainWindow(QMainWindow):
             width = res[0]
             height = res[1]
 
-        self.set_logo_settings_from_image(
-            self.config.config_logo_name, width, height)
+        self.set_logo_settings_from_image(self.config.config_logo_name, width, height)
         self.enable_logo_settings(False)
 
     def create_menu(

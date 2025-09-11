@@ -6,7 +6,7 @@ import configparser
 
 
 class Config:
-    def __init__(self, filename):
+    def __init__(self, filename: str):
         """
         Initialize the Config class
         """
