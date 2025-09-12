@@ -2,9 +2,8 @@ import os
 import unittest
 from pathlib import Path
 
-
 from modules.paths import Paths
-
+from modules.pdf_creator import PdfCreator
 from tests.commons import (
     create_directory,
     create_logo_file,
@@ -13,7 +12,6 @@ from tests.commons import (
     restore_env,
     test_directory,
 )
-from modules.pdf_creator import PdfCreator
 
 
 class TestPdfCreatorMethods(unittest.TestCase):

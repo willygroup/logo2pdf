@@ -35,7 +35,8 @@ class PdfCreator:
 
             input_file = file
             filename = os.path.basename(file)
-            output_file = "{0}_{2}.{1}".format(*filename.rsplit(".", 1), "logo")
+            val0, val1 = filename.rsplit(".", 1)
+            output_file = f"{val0}_logo.{val1}"
 
             output_file = os.path.join(self.output_dir, output_file)
             if self.create_watermark(
@@ -67,12 +68,11 @@ class PdfCreator:
                 return False
 
             # Watermark all the pages
-            for page in range(len(pdf_reader.pages)):
-                page = pdf_reader.pages[page]
+            for _i, page in enumerate(pdf_reader.pages):
                 page.merge_page(watermark_page)
                 pdf_writer.add_page(page)
 
-            print("output: {}".format(output))
+            print(f"output: {output}")
 
             try:
                 with open(output, "wb") as out:
@@ -86,7 +86,8 @@ class PdfCreator:
     @staticmethod
     def checks_valid_pdf(input_file) -> bool:
         try:
-            PyPDF2.PdfReader(open(input_file, "rb"))
+            with open(input_file, "rb") as file:
+                PyPDF2.PdfReader(file)
             return True
         except Exception:
             return False

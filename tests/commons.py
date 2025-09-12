@@ -8,7 +8,7 @@ test_directory = os.path.realpath(__file__).replace(os.path.basename(__file__), 
 
 
 def create_file(filename):
-    with open(filename, "w") as f:
+    with open(filename, "w", encoding="utf-8") as f:
         f.write("file: " + filename)
 
 

@@ -24,7 +24,7 @@ def create_environment():
     if not os.path.exists(Paths.out("logo")):
         os.makedirs(Paths.out("logo"))
     if not logo_file:
-        print("No {} file found!".format(logo_file))
+        print(f"No {logo_file} file found!")
         sys.exit(1)
     if not PdfCreator.checks_valid_pdf(logo_file):
         print("logo.pdf is not a valid pdf file!")
@@ -32,6 +32,7 @@ def create_environment():
 
 
 def open_directory(directory):
+    # TODO CHECK the method used on csv2label
     """
     Open the output directory
     """

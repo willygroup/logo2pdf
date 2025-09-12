@@ -21,13 +21,12 @@ from modules.pdf_creator import PdfCreator
 from modules.utils import create_environment
 
 
-
 def main():
 
     app = QApplication(sys.argv)
     config = Config(Paths.file("config.conf"))
     if config.load_config():
-        window = MainWindow( config)
+        window = MainWindow(config)
         window.show()
         app.exec()
     else:
@@ -39,13 +38,12 @@ def execute_from_commandline():
     """
     Execute the app as a script from commandline
     """
-    
 
     # TODO load logo from config
 
     # TODO logo pdf as argument (--logofile my_logo.pdf)
     logo_file = Paths.logo("willygroup.pdf")
-    pdf_creator = PdfCreator( logo_file)
+    pdf_creator = PdfCreator(logo_file)
 
     if len(sys.argv) == 1:
         # process folder
@@ -58,7 +56,7 @@ def execute_from_commandline():
     processed_files = pdf_creator.process_files()
 
     if processed_files > 0:
-        print("{} files processed".format(processed_files))
+        print(f"{processed_files} files processed")
         utils.open_directory(Paths.out("logo"))
     else:
         print("No file processed")
@@ -70,7 +68,7 @@ if __name__ == "__main__":
     except getopt.GetoptError:
         print("main.py --headless")
         sys.exit(2)
-    
+
     try:
         create_environment()
     except Exception as e:

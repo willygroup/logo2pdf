@@ -37,7 +37,7 @@ class DropArea(QWidget):
 
     def set_background_color(self, color):
         self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
-        self.setStyleSheet("background-color: {}".format(color))
+        self.setStyleSheet(f"background-color: {color}")
 
     def find_type(self, mimedata):
         urls = list()

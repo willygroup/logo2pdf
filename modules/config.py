@@ -26,7 +26,7 @@ class Config:
             # logger.error("error reading config file")
             return False
         except Exception as ex:
-            print("Exception 2: {}".format(type(ex).__name__))
+            print("Exception 2: {type(ex).__name__)}")
             return False
         return True
 

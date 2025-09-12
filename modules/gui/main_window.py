@@ -14,7 +14,7 @@ from PySide6.QtWidgets import (
     QWidget,
     QGridLayout,
     QLineEdit,
-    QCheckBox
+    QCheckBox,
 )
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QIcon, QAction
@@ -44,8 +44,7 @@ class MainWindow(QMainWindow):
         main_layout = QHBoxLayout()
 
         self.pdf_drop_area = DropArea(_("Drag pdf files here!"), "pdf")
-        self.pdf_drop_area.background.setAlignment(
-            Qt.AlignmentFlag.AlignCenter)
+        self.pdf_drop_area.background.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.pdf_drop_area.set_size(300, 300)
         self.pdf_drop_area.set_background_color("lightgrey")
 
@@ -55,7 +54,7 @@ class MainWindow(QMainWindow):
         main_layout.addWidget(self.pdf_drop_area)
 
         right_layout = QVBoxLayout()
-        label = QLabel("<i>"+_("Drag a logo (png) into the box below!")+"</i>")
+        label = QLabel("<i>" + _("Drag a logo (png) into the box below!") + "</i>")
         label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         right_layout.addWidget(label)
 
@@ -67,8 +66,7 @@ class MainWindow(QMainWindow):
         self.logo_drop_area.set_action(self.logo_action)
 
         right_layout.addWidget(self.logo_drop_area)
-        right_layout.setAlignment(
-            self.logo_drop_area, Qt.AlignmentFlag.AlignHCenter)
+        right_layout.setAlignment(self.logo_drop_area, Qt.AlignmentFlag.AlignHCenter)
 
         self.logo_settings_default = QPushButton(_("Create PDF"))
         self.logo_settings_default.clicked.connect(self.create_logo_pdf)
@@ -87,34 +85,36 @@ class MainWindow(QMainWindow):
         logo_settings_area.addWidget(QLabel(_("Name:")), row, 0)
         self.logo_settings_name = QLineEdit()
         logo_settings_area.addWidget(self.logo_settings_name, row, 1)
-        row = row+1
+        row = row + 1
 
         logo_settings_area.addWidget(QLabel(_("Keep Aspect Ratio:")), row, 0)
         self.logo_settings_aspect_ratio = QCheckBox()
         logo_settings_area.addWidget(self.logo_settings_aspect_ratio)
-        row = row+1
+        row = row + 1
         logo_settings_area.addWidget(QLabel(_("Width:")), row, 0)
         self.logo_settings_width = QLineEdit()
         self.logo_settings_width.textEdited.connect(
-            lambda: self.calculate_aspect_ratio("width"))
+            lambda: self.calculate_aspect_ratio("width")
+        )
 
         logo_settings_area.addWidget(self.logo_settings_width, row, 1)
         logo_settings_area.addWidget(QLabel("[mm]"), row, 2)
-        row = row+1
+        row = row + 1
 
         logo_settings_area.addWidget(QLabel(_("Height:")), row, 0)
         self.logo_settings_height = QLineEdit()
         self.logo_settings_height.textEdited.connect(
-            lambda: self.calculate_aspect_ratio("height"))
+            lambda: self.calculate_aspect_ratio("height")
+        )
         logo_settings_area.addWidget(self.logo_settings_height, row, 1)
         logo_settings_area.addWidget(QLabel("[mm]"), row, 2)
-        row = row+1
+        row = row + 1
 
         logo_settings_area.addWidget(QLabel(_("Pos. X:")), row, 0)
         self.logo_settings_pos_x = QLineEdit()
         logo_settings_area.addWidget(self.logo_settings_pos_x, row, 1)
         logo_settings_area.addWidget(QLabel("[mm]"), row, 2)
-        row = row+1
+        row = row + 1
 
         logo_settings_area.addWidget(QLabel(_("Pos. Y:")), row, 0)
         self.logo_settings_pos_y = QLineEdit()
@@ -138,16 +138,14 @@ class MainWindow(QMainWindow):
             if caller == "height":
 
                 height = int(self.logo_settings_height.text())
-                width = int(
-                    self.logo_settings_original_aspect_ratio*float(height))
+                width = int(self.logo_settings_original_aspect_ratio * float(height))
 
             elif caller == "width":
                 width = int(self.logo_settings_width.text())
-                height = int(
-                    self.logo_settings_original_aspect_ratio*float(width))
+                height = int(self.logo_settings_original_aspect_ratio * float(width))
 
-            self.logo_settings_height.setText("{:d}".format(height))
-            self.logo_settings_width.setText("{:d}".format(width))
+            self.logo_settings_height.setText(f"{height:d}")
+            self.logo_settings_width.setText(f"{width:d}")
 
     def show_pdf_logo(self):
         utils.open_directory(Paths.logos)
@@ -188,15 +186,23 @@ class MainWindow(QMainWindow):
                 )
             )
 
-    def set_logo_settings(self, btn_text: str, name: str, ar: bool, width: str, height: str, pos_x: str, pos_y: str):
+    def set_logo_settings(
+        self,
+        btn_text: str,
+        name: str,
+        ar: bool,
+        width: str,
+        height: str,
+        pos_x: str,
+        pos_y: str,
+    ):
         """
         Set the values for logo settings
         """
         self.logo_settings_default.setText(btn_text)
         self.logo_settings_name.setText(name)
         self.logo_settings_aspect_ratio.setChecked(ar)
-        self.logo_settings_original_aspect_ratio = float(
-            int(width)/int(height))
+        self.logo_settings_original_aspect_ratio = float(int(width) / int(height))
         self.logo_settings_width.setText(width)
         self.logo_settings_height.setText(height)
         self.logo_settings_pos_x.setText(pos_x)
@@ -211,16 +217,18 @@ class MainWindow(QMainWindow):
         ratio = width / height
         d_height = int(d_width / ratio)
 
-        self.set_logo_settings(_("Create PDF"), name, False, str(
-            d_width), str(d_height), "10", "10")
+        self.set_logo_settings(
+            _("Create PDF"), name, False, str(d_width), str(d_height), "10", "10"
+        )
 
     def default_on_logo_settings(self):
         """
         Set the default value for logo settings
         """
 
-        self.set_logo_settings(_("Create PDF"), _("name"), False,
-                               "50", "50", "10", "10")
+        self.set_logo_settings(
+            _("Create PDF"), _("name"), False, "50", "50", "10", "10"
+        )
 
     def enable_logo_settings(self, status: bool):
         """
@@ -254,7 +262,7 @@ class MainWindow(QMainWindow):
 
         if processed_files > 0:
             # TODO Write on Status Bar
-            print("{} files processed".format(processed_files))
+            print(f"{processed_files} files processed")
             utils.open_directory(Paths.out("logo"))
 
         else:
@@ -329,8 +337,8 @@ class MainWindow(QMainWindow):
                 self.enable_logo_settings(True)
                 self.logo_settings_default.setText(_("Create PDF"))
                 self.logo_settings_default.setEnabled(False)
-            except Exception as ex:
-                print("Exception 1: {}".format(type(ex).__name__))
+            except Exception as ex:  # TODO HANDLE THIS
+                print(f"Exception 1: {type(ex).__name__}")
                 print(ex)
 
             self.logo_show_pdf.setEnabled(False)

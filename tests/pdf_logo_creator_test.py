@@ -1,5 +1,5 @@
 import unittest
-
+import os
 
 from modules.pdf_logo_creator import PdfLogoCreator, Point
 
@@ -8,8 +8,6 @@ from tests.commons import (
     restore_env,
     test_directory,
 )
-
-import os
 
 
 class TestPdfLogoCreatorMethods(unittest.TestCase):
@@ -24,8 +22,7 @@ class TestPdfLogoCreatorMethods(unittest.TestCase):
 
         tmp_dir = prepare_env("pdflogocreator")
 
-        image_file = os.path.join(
-            test_directory, "test_files", "image_logo.png")
+        image_file = os.path.join(test_directory, "test_files", "image_logo.png")
         output_file = os.path.join(tmp_dir, "test.pdf")
 
         pdf_logo = PdfLogoCreator(

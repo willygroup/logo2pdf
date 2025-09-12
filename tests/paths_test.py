@@ -21,7 +21,7 @@ class TestPathsMethods(unittest.TestCase):
         tmp_dir = prepare_env("paths_init")
 
         try:
-            paths = Paths.init(tmp_dir)
+            Paths.init(tmp_dir)
 
             self.assertEqual(Paths.base, tmp_dir)
 
