@@ -2,7 +2,9 @@ import os
 import shutil
 import tempfile
 
-dirname = os.path.realpath(__file__).replace("common.py", "")
+from modules.paths import Paths
+
+dirname = os.path.realpath(__file__).replace(os.path.basename(__file__), "")
 
 
 def create_file(filename):
@@ -51,8 +53,10 @@ def create_directory(pathname):
     os.makedirs(pathname, exist_ok=True)
 
 
-def prepare_env(suffix):
-    return tempfile.mkdtemp(suffix, "tmp_")
+def prepare_env(suffix) -> str:
+    tmp_dir = tempfile.mkdtemp(suffix, "tmp_")
+    Paths.init(tmp_dir)
+    return tmp_dir
 
 
 def restore_env(directory):

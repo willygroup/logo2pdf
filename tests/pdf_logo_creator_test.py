@@ -3,7 +3,7 @@ import unittest
 
 from modules.pdf_logo_creator import PdfLogoCreator, Point
 
-from tests.common import (
+from tests.commons import (
     prepare_env,
     restore_env,
     dirname,

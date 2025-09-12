@@ -1,5 +1,4 @@
 import json
-import os
 from typing import Dict
 
 from modules.paths import Paths
@@ -31,7 +30,7 @@ class LogoMetadata:
                 if not isinstance(self.data, Dict):
                     return False
                 return True
-        except Exception as e:
+        except Exception:
             return False
 
     def store_metadata(self) -> bool:
@@ -46,7 +45,7 @@ class LogoMetadata:
                 outfile.write(json_object)
                 outfile.close()
                 return True
-        except Exception as e:
+        except Exception:
             return False
 
     def set_name(self, name: str):

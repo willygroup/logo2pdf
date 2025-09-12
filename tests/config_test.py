@@ -2,12 +2,10 @@ import os
 import unittest
 
 
-from tests.common import (
+from tests.commons import (
     create_config_file,
-    create_directory,
     prepare_env,
     restore_env,
-    dirname,
 )
 from modules.config import Config
 
@@ -48,7 +46,7 @@ class TestConfigMethods(unittest.TestCase):
         create_config_file(config_file)
 
         try:
-            config = Config(tmp_dir, config_file)
+            config = Config(config_file)
 
             res = config.load_config()
 
@@ -68,7 +66,7 @@ class TestConfigMethods(unittest.TestCase):
         config_file = os.path.join(tmp_dir, "config.conf")
 
         try:
-            config = Config(tmp_dir, config_file)
+            config = Config(config_file)
 
             res = config.load_config()
 
@@ -89,7 +87,7 @@ class TestConfigMethods(unittest.TestCase):
         create_config_file(config_file, False)
 
         try:
-            config = Config(tmp_dir, config_file)
+            config = Config(config_file)
 
             res = config.load_config()
 
@@ -107,7 +105,7 @@ class TestConfigMethods(unittest.TestCase):
 
         try:
 
-            config = Config("anydir", config_file)
+            config = Config(config_file)
 
             res = config.set_config("new_logo")
 
@@ -127,7 +125,7 @@ class TestConfigMethods(unittest.TestCase):
         config_file = os.path.join(tmp_dir, "config.conf")
 
         try:
-            config = Config(tmp_dir, config_file)
+            config = Config(config_file)
 
             res = config.config_logo_name = "new_logo"
 

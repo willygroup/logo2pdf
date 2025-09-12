@@ -4,7 +4,7 @@ import json
 
 from modules.logo_metadata import LogoMetadata
 
-from tests.common import (
+from tests.commons import (
     create_directory,
     create_metadata_file,
     prepare_env,
@@ -25,7 +25,7 @@ class LogoMetadataMethods(unittest.TestCase):
 
         tmp_dir = prepare_env("logo_metadata_init")
         try:
-            logo_metadata = LogoMetadata(tmp_dir, logo_name)
+            logo_metadata = LogoMetadata(logo_name)
 
             self.assertEqual(
                 logo_metadata.file_path,
@@ -43,7 +43,7 @@ class LogoMetadataMethods(unittest.TestCase):
 
         tmp_dir = prepare_env("logo_metadata_load")
         try:
-            logo_metadata = LogoMetadata(tmp_dir, logo_name)
+            logo_metadata = LogoMetadata(logo_name)
             res = logo_metadata.load_metadata()
 
             self.assertFalse(res)
@@ -65,7 +65,7 @@ class LogoMetadataMethods(unittest.TestCase):
         )
 
         try:
-            logo_metadata = LogoMetadata(tmp_dir, logo_name)
+            logo_metadata = LogoMetadata(logo_name)
             res = logo_metadata.load_metadata()
 
             self.assertFalse(res)
@@ -87,7 +87,7 @@ class LogoMetadataMethods(unittest.TestCase):
         )
 
         try:
-            logo_metadata = LogoMetadata(tmp_dir, logo_name)
+            logo_metadata = LogoMetadata(logo_name)
             res = logo_metadata.load_metadata()
 
             self.assertTrue(res)
@@ -111,7 +111,7 @@ class LogoMetadataMethods(unittest.TestCase):
         )
 
         try:
-            logo_metadata = LogoMetadata(tmp_dir, logo_name)
+            logo_metadata = LogoMetadata(logo_name)
             res = logo_metadata.load_metadata()
 
             self.assertTrue(res)
@@ -142,7 +142,7 @@ class LogoMetadataMethods(unittest.TestCase):
         )
 
         try:
-            logo_metadata = LogoMetadata(tmp_dir, logo_name)
+            logo_metadata = LogoMetadata(logo_name)
             res = logo_metadata.load_metadata()
 
             self.assertTrue(res)
