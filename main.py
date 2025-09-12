@@ -6,7 +6,6 @@ An app to add a watermark to pdf files
 """
 
 import getopt
-import os
 import sys
 
 

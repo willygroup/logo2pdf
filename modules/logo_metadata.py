@@ -1,5 +1,4 @@
 import json
-import os
 from typing import Dict
 
 from modules.paths import Paths
@@ -10,11 +9,11 @@ from modules.paths import Paths
 
 
 class LogoMetadata:
-    def __init__(self,  name):
+    def __init__(self, name: str) -> None:
         """
         Initialize the LogoMetadata class
         """
-        self.file_path = Paths.logo(name+".json")
+        self.file_path = Paths.logo(name + ".json")
 
         default_values = '{"name":"","pdf_hash":"","image":{"aspect_ratio":0,"width":30,"height":30,"pos_x":12,"pos_y":12}}'
         # convert into JSON:
@@ -31,7 +30,7 @@ class LogoMetadata:
                 if not isinstance(self.data, Dict):
                     return False
                 return True
-        except Exception as e:
+        except Exception:
             return False
 
     def store_metadata(self) -> bool:
@@ -46,7 +45,7 @@ class LogoMetadata:
                 outfile.write(json_object)
                 outfile.close()
                 return True
-        except Exception as e:
+        except Exception:
             return False
 
     def set_name(self, name: str):

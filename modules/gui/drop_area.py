@@ -1,7 +1,6 @@
 from PySide6.QtWidgets import QWidget, QLabel, QVBoxLayout
-from PySide6 import QtCore
 from PySide6.QtGui import QPixmap
-from PySide6.QtCore import QMimeDatabase
+from PySide6.QtCore import QMimeDatabase, Qt
 
 
 class DropArea(QWidget):
@@ -37,7 +36,7 @@ class DropArea(QWidget):
         self.setFixedSize(width, height)
 
     def set_background_color(self, color):
-        self.setAttribute(QtCore.Qt.WA_StyledBackground, True)
+        self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
         self.setStyleSheet("background-color: {}".format(color))
 
     def find_type(self, mimedata):

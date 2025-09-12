@@ -2,7 +2,7 @@ import os
 import unittest
 
 
-from tests.common import (
+from tests.commons import (
     create_config_file,
     prepare_env,
     restore_env,

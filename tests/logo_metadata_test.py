@@ -5,7 +5,7 @@ import json
 from modules.logo_metadata import LogoMetadata
 
 from modules.paths import Paths
-from tests.common import (
+from tests.commons import (
     create_directory,
     create_metadata_file,
     prepare_env,
@@ -91,9 +91,7 @@ class TestLogoMetadataMethods(unittest.TestCase):
         logo_name = "xxx"
         create_directory(Paths.files)
         create_directory(Paths.logos)
-        create_metadata_file(
-            Paths.logo(logo_name + ".json"), True
-        )
+        create_metadata_file(Paths.logo(logo_name + ".json"), True)
 
         try:
             logo_metadata = LogoMetadata(logo_name)
@@ -117,9 +115,7 @@ class TestLogoMetadataMethods(unittest.TestCase):
         logo_name = "store"
         create_directory(Paths.files)
         create_directory(Paths.logos)
-        create_metadata_file(
-            Paths.logo(logo_name + ".json"), True
-        )
+        create_metadata_file(Paths.logo(logo_name + ".json"), True)
 
         try:
             logo_metadata = LogoMetadata(logo_name)
@@ -129,10 +125,7 @@ class TestLogoMetadataMethods(unittest.TestCase):
             logo_metadata.data["name"] = "goodbye"
             res = logo_metadata.store_metadata()
 
-            with open(
-                Paths.logo(
-                    logo_name + ".json"), "r"
-            ) as json_file:
+            with open(Paths.logo(logo_name + ".json"), "r") as json_file:
                 json_struct = json.load(json_file)
                 self.assertTrue(json_struct["name"], "goodbye")
                 json_file.close()
@@ -151,9 +144,7 @@ class TestLogoMetadataMethods(unittest.TestCase):
         logo_name = "store"
         create_directory(Paths.files)
         create_directory(Paths.logos)
-        create_metadata_file(
-            Paths.logo(logo_name + ".json"), True
-        )
+        create_metadata_file(Paths.logo(logo_name + ".json"), True)
 
         try:
             logo_metadata = LogoMetadata(logo_name)
@@ -168,9 +159,7 @@ class TestLogoMetadataMethods(unittest.TestCase):
 
             res = logo_metadata.store_metadata()
 
-            with open(
-                Paths.logo(logo_name + ".json"), "r"
-            ) as json_file:
+            with open(Paths.logo(logo_name + ".json"), "r") as json_file:
                 json_struct = json.load(json_file)
                 self.assertTrue(json_struct["name"], "new_name")
                 self.assertTrue(json_struct["pdf_hash"], "new_hash")

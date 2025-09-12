@@ -4,14 +4,14 @@ Provides methods to create PDFs
 
 import os
 
-from PyPDF2 import PdfWriter,  PdfReader
+from PyPDF2 import PdfWriter, PdfReader
 import PyPDF2
 
 from modules.paths import Paths
 
 
 class PdfCreator:
-    def __init__(self,  logo_file):
+    def __init__(self, logo_file):
         self.logo_file = logo_file
         self.output_dir = Paths.out("logo")
         self.input_dir = Paths.out("nologo")
@@ -35,8 +35,7 @@ class PdfCreator:
 
             input_file = file
             filename = os.path.basename(file)
-            output_file = "{0}_{2}.{1}".format(
-                *filename.rsplit(".", 1), "logo")
+            output_file = "{0}_{2}.{1}".format(*filename.rsplit(".", 1), "logo")
 
             output_file = os.path.join(self.output_dir, output_file)
             if self.create_watermark(
@@ -77,7 +76,7 @@ class PdfCreator:
 
             try:
                 with open(output, "wb") as out:
-                    res = pdf_writer.write(out)
+                    _res = pdf_writer.write(out)
 
                     return True
             except Exception:

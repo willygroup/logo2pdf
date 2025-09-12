@@ -1,14 +1,11 @@
 import os
 import unittest
 
-
-from tests.common import (
-    create_config_file,
-    create_directory,
+from modules.paths import Paths
+from tests.commons import (
     prepare_env,
     restore_env,
 )
-from modules.paths import Paths
 
 
 class TestPathsMethods(unittest.TestCase):
@@ -16,7 +13,7 @@ class TestPathsMethods(unittest.TestCase):
     Testing Paths
     """
 
-    def test_init(self):
+    def test_init(self) -> None:
         """
         Init method test
         """
@@ -35,7 +32,7 @@ class TestPathsMethods(unittest.TestCase):
         finally:
             restore_env(tmp_dir)
 
-    def test_image(self):
+    def test_image(self) -> None:
         """
         image method test
         """
@@ -44,8 +41,10 @@ class TestPathsMethods(unittest.TestCase):
 
         try:
             Paths.init(tmp_dir)
-            self.assertEqual(Paths.image("image.png"),
-                             os.path.join(tmp_dir, "files", "images", "image.png"))
+            self.assertEqual(
+                Paths.image("image.png"),
+                os.path.join(tmp_dir, "files", "images", "image.png"),
+            )
 
         except Exception as e:
             print(e)
@@ -54,7 +53,7 @@ class TestPathsMethods(unittest.TestCase):
         finally:
             restore_env(tmp_dir)
 
-    def test_locale(self):
+    def test_locale(self) -> None:
         """
         locale method test
         """
@@ -63,8 +62,9 @@ class TestPathsMethods(unittest.TestCase):
 
         try:
             Paths.init(tmp_dir)
-            self.assertEqual(Paths.locale("file"),
-                             os.path.join(tmp_dir, "files", "locale", "file"))
+            self.assertEqual(
+                Paths.locale("file"), os.path.join(tmp_dir, "files", "locale", "file")
+            )
 
         except Exception as e:
             print(e)
@@ -73,7 +73,7 @@ class TestPathsMethods(unittest.TestCase):
         finally:
             restore_env(tmp_dir)
 
-    def test_file(self):
+    def test_file(self) -> None:
         """
         file method test
         """
@@ -82,8 +82,7 @@ class TestPathsMethods(unittest.TestCase):
 
         try:
             Paths.init(tmp_dir)
-            self.assertEqual(Paths.file("file"),
-                             os.path.join(tmp_dir, "files", "file"))
+            self.assertEqual(Paths.file("file"), os.path.join(tmp_dir, "files", "file"))
 
         except Exception as e:
             print(e)
@@ -101,8 +100,10 @@ class TestPathsMethods(unittest.TestCase):
 
         try:
             Paths.init(tmp_dir)
-            self.assertEqual(Paths.logo("logo.png"),
-                             os.path.join(tmp_dir, "files", "logos", "logo.png"))
+            self.assertEqual(
+                Paths.logo("logo.png"),
+                os.path.join(tmp_dir, "files", "logos", "logo.png"),
+            )
 
         except Exception as e:
             print(e)
@@ -120,8 +121,7 @@ class TestPathsMethods(unittest.TestCase):
 
         try:
             Paths.init(tmp_dir)
-            self.assertEqual(Paths.out("file"),
-                             os.path.join(tmp_dir, "output", "file"))
+            self.assertEqual(Paths.out("file"), os.path.join(tmp_dir, "output", "file"))
 
         except Exception as e:
             print(e)
