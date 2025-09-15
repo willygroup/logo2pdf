@@ -33,7 +33,6 @@ class LogoSettings:
     name: QLineEdit
     aspect_ratio: QCheckBox
     width: QLineEdit
-    width: QLineEdit
     height: QLineEdit
     default: QPushButton
     original_aspect_ratio: float
@@ -52,6 +51,7 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         self.config = config
+        self.logo_image = ""
 
         self.set_icon()
         self.create_menu()
@@ -64,7 +64,9 @@ class MainWindow(QMainWindow):
         self.pdf_drop_area.set_size(300, 300)
         self.pdf_drop_area.set_background_color("lightgrey")
 
-        # self.pdf_drop_area.set_background_image(QImage(Paths.image("dragpdf.png"))) #TODO Create a background image
+        # TODO Create a background image
+        # self.pdf_drop_area.set_background_image(QImage(Paths.image("dragpdf.png")))
+
         self.pdf_drop_area.set_action(self.add_logo)
 
         main_layout.addWidget(self.pdf_drop_area)
@@ -98,6 +100,20 @@ class MainWindow(QMainWindow):
 
         logo_settings_area = QGridLayout()
 
+        self.set_settings_area(logo_settings_area)
+
+        self.set_default_logo()
+
+        right_layout.addLayout(logo_settings_area)
+
+        main_layout.addLayout(right_layout)
+
+        main_widget = QWidget(self)
+        main_widget.setLayout(main_layout)
+
+        self.setCentralWidget(main_widget)
+
+    def set_settings_area(self, logo_settings_area: QGridLayout) -> None:
         row = 0
 
         logo_settings_area.addWidget(QLabel(_("Name:")), row, 0)
@@ -140,17 +156,6 @@ class MainWindow(QMainWindow):
         self.logo_settings.pos_y = QLineEdit()
         logo_settings_area.addWidget(self.logo_settings.pos_y, row, 1)
         logo_settings_area.addWidget(QLabel("[mm]"), row, 2)
-
-        self.set_default_logo()
-
-        right_layout.addLayout(logo_settings_area)
-
-        main_layout.addLayout(right_layout)
-
-        main_widget = QWidget(self)
-        main_widget.setLayout(main_layout)
-
-        self.setCentralWidget(main_widget)
 
     def calculate_aspect_ratio(self, caller: str):
         print("caller: ", caller)

@@ -11,6 +11,7 @@ class Config:
         Initialize the Config class
         """
         self.filename = filename
+        self.config_logo_name = ""
 
     def load_config(self):
         """

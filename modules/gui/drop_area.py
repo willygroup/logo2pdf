@@ -6,6 +6,7 @@ from PySide6.QtCore import QMimeDatabase, Qt
 class DropArea(QWidget):
     def __init__(self, text, mimetype="image"):
         super().__init__()
+        self.action = None
         if mimetype == "image":
             self.mimetypes = ["image/png", "image/jpg", "image/jpeg"]
         else:
@@ -40,7 +41,7 @@ class DropArea(QWidget):
         self.setStyleSheet(f"background-color: {color}")
 
     def find_type(self, mimedata):
-        urls = list()
+        urls = []
         db = QMimeDatabase()
         for url in mimedata.urls():
             mimetype = db.mimeTypeForUrl(url)
