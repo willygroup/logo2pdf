@@ -8,6 +8,8 @@ ChangeLog
 * Added aspect ratio to logo creation from image
 * added Paths
 * Fixed test unit
+* script as git submodule
+* pylint and ruff compliant
 
 0.1.1 - skipped
 ------------------
