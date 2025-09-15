@@ -1,1 +1,0 @@
-&".\.win_env\Scripts\activate"
