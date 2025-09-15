@@ -31,20 +31,17 @@ def create_environment():
         sys.exit(1)
 
 
-def open_directory(directory):
-    # TODO CHECK the method used on csv2label
-    """
-    Open the output directory
-    """
+def open_directory(directory: str) -> bool:
     os_name = platform.system()
     if os_name == "Linux":
-        subprocess.Popen(["xdg-open", directory])
+        with subprocess.Popen(["xdg-open", directory]):
+            pass
     elif os_name == "Windows":
         # pylint: disable=no-member
         os.startfile(directory)
     elif os_name == "Darwin":
-        subprocess.Popen(["open", directory])
+        with subprocess.Popen(["open", directory]):
+            pass
     else:
-        # logger.error("Error: Operating System not recognized!")
         return False
     return True

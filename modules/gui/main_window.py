@@ -1,7 +1,6 @@
+from dataclasses import dataclass
 import os
 import shutil
-import modules
-
 
 from PySide6.QtWidgets import (
     QLabel,
@@ -18,7 +17,8 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QIcon, QAction
-from modules import utils
+
+from modules import utils, __package_name__, __version__
 from modules.config import Config
 from modules.gui.drop_area import DropArea
 from modules.lang import _
@@ -26,6 +26,22 @@ from modules.logo_metadata import LogoMetadata
 from modules.paths import Paths
 from modules.pdf_creator import PdfCreator
 from modules.pdf_logo_creator import PdfLogoCreator, Point
+
+
+@dataclass
+class LogoSettings:
+    name: QLineEdit
+    aspect_ratio: QCheckBox
+    width: QLineEdit
+    width: QLineEdit
+    height: QLineEdit
+    default: QPushButton
+    original_aspect_ratio: float
+    pos_x: QLineEdit
+    pos_y: QLineEdit
+
+    def __init__(self):
+        pass
 
 
 class MainWindow(QMainWindow):
@@ -68,9 +84,11 @@ class MainWindow(QMainWindow):
         right_layout.addWidget(self.logo_drop_area)
         right_layout.setAlignment(self.logo_drop_area, Qt.AlignmentFlag.AlignHCenter)
 
-        self.logo_settings_default = QPushButton(_("Create PDF"))
-        self.logo_settings_default.clicked.connect(self.create_logo_pdf)
-        right_layout.addWidget(self.logo_settings_default)
+        self.logo_settings = LogoSettings()
+
+        self.logo_settings.default = QPushButton(_("Create PDF"))
+        self.logo_settings.default.clicked.connect(self.create_logo_pdf)
+        right_layout.addWidget(self.logo_settings.default)
 
         # TODO show created pdf
         self.logo_show_pdf = QPushButton(_("Show PDF Logo"))
@@ -83,42 +101,44 @@ class MainWindow(QMainWindow):
         row = 0
 
         logo_settings_area.addWidget(QLabel(_("Name:")), row, 0)
-        self.logo_settings_name = QLineEdit()
-        logo_settings_area.addWidget(self.logo_settings_name, row, 1)
+        self.logo_settings.name = QLineEdit()
+        logo_settings_area.addWidget(self.logo_settings.name, row, 1)
         row = row + 1
 
         logo_settings_area.addWidget(QLabel(_("Keep Aspect Ratio:")), row, 0)
-        self.logo_settings_aspect_ratio = QCheckBox()
-        logo_settings_area.addWidget(self.logo_settings_aspect_ratio)
+
+        self.logo_settings.aspect_ratio = QCheckBox()
+        logo_settings_area.addWidget(self.logo_settings.aspect_ratio)
         row = row + 1
         logo_settings_area.addWidget(QLabel(_("Width:")), row, 0)
-        self.logo_settings_width = QLineEdit()
-        self.logo_settings_width.textEdited.connect(
+
+        self.logo_settings.width = QLineEdit()
+        self.logo_settings.width.textEdited.connect(
             lambda: self.calculate_aspect_ratio("width")
         )
 
-        logo_settings_area.addWidget(self.logo_settings_width, row, 1)
+        logo_settings_area.addWidget(self.logo_settings.width, row, 1)
         logo_settings_area.addWidget(QLabel("[mm]"), row, 2)
         row = row + 1
 
         logo_settings_area.addWidget(QLabel(_("Height:")), row, 0)
-        self.logo_settings_height = QLineEdit()
-        self.logo_settings_height.textEdited.connect(
+        self.logo_settings.height = QLineEdit()
+        self.logo_settings.height.textEdited.connect(
             lambda: self.calculate_aspect_ratio("height")
         )
-        logo_settings_area.addWidget(self.logo_settings_height, row, 1)
+        logo_settings_area.addWidget(self.logo_settings.height, row, 1)
         logo_settings_area.addWidget(QLabel("[mm]"), row, 2)
         row = row + 1
 
         logo_settings_area.addWidget(QLabel(_("Pos. X:")), row, 0)
-        self.logo_settings_pos_x = QLineEdit()
-        logo_settings_area.addWidget(self.logo_settings_pos_x, row, 1)
+        self.logo_settings.pos_x = QLineEdit()
+        logo_settings_area.addWidget(self.logo_settings.pos_x, row, 1)
         logo_settings_area.addWidget(QLabel("[mm]"), row, 2)
         row = row + 1
 
         logo_settings_area.addWidget(QLabel(_("Pos. Y:")), row, 0)
-        self.logo_settings_pos_y = QLineEdit()
-        logo_settings_area.addWidget(self.logo_settings_pos_y, row, 1)
+        self.logo_settings.pos_y = QLineEdit()
+        logo_settings_area.addWidget(self.logo_settings.pos_y, row, 1)
         logo_settings_area.addWidget(QLabel("[mm]"), row, 2)
 
         self.set_default_logo()
@@ -134,18 +154,18 @@ class MainWindow(QMainWindow):
 
     def calculate_aspect_ratio(self, caller: str):
         print("caller: ", caller)
-        if self.logo_settings_aspect_ratio.isChecked():
+        if self.logo_settings.aspect_ratio.isChecked():
             if caller == "height":
 
-                height = int(self.logo_settings_height.text())
-                width = int(self.logo_settings_original_aspect_ratio * float(height))
+                height = int(self.logo_settings.height.text())
+                width = int(self.logo_settings.original_aspect_ratio * float(height))
 
             elif caller == "width":
-                width = int(self.logo_settings_width.text())
-                height = int(self.logo_settings_original_aspect_ratio * float(width))
+                width = int(self.logo_settings.width.text())
+                height = int(self.logo_settings.original_aspect_ratio * float(width))
 
-            self.logo_settings_height.setText(f"{height:d}")
-            self.logo_settings_width.setText(f"{width:d}")
+            self.logo_settings.height.setText(f"{height:d}")
+            self.logo_settings.width.setText(f"{width:d}")
 
     def show_pdf_logo(self):
         utils.open_directory(Paths.logos)
@@ -155,7 +175,7 @@ class MainWindow(QMainWindow):
         Create a pdf from the image dropped with the settings specified
         """
 
-        output_file: str = str(self.logo_settings_name.text()) + ".pdf"
+        output_file: str = str(self.logo_settings.name.text()) + ".pdf"
         output_file = Paths.logo(output_file)
 
         # TODO checks on the fields
@@ -163,12 +183,12 @@ class MainWindow(QMainWindow):
             self.logo_image,
             output_file,
             Point(
-                int(self.logo_settings_width.text()),
-                int(self.logo_settings_height.text()),
+                int(self.logo_settings.width.text()),
+                int(self.logo_settings.height.text()),
             ),
             Point(
-                float(self.logo_settings_pos_x.text()),
-                float(self.logo_settings_pos_y.text()),
+                float(self.logo_settings.pos_x.text()),
+                float(self.logo_settings.pos_y.text()),
             ),
         )
 
@@ -176,13 +196,13 @@ class MainWindow(QMainWindow):
         if logo:
             # Disable the settings, but the btn
             self.enable_logo_settings(False)
-            self.logo_settings_default.setText(_("Set as Default"))
-            self.logo_settings_default.setEnabled(True)
+            self.logo_settings.default.setText(_("Set as Default"))
+            self.logo_settings.default.setEnabled(True)
             self.logo_show_pdf.setEnabled(True)
 
-            self.logo_settings_default.clicked.connect(
+            self.logo_settings.default.clicked.connect(
                 lambda: self.set_default_logo(
-                    self.logo_image, self.logo_settings_name.text()
+                    self.logo_image, self.logo_settings.name.text()
                 )
             )
 
@@ -199,14 +219,14 @@ class MainWindow(QMainWindow):
         """
         Set the values for logo settings
         """
-        self.logo_settings_default.setText(btn_text)
-        self.logo_settings_name.setText(name)
-        self.logo_settings_aspect_ratio.setChecked(ar)
-        self.logo_settings_original_aspect_ratio = float(int(width) / int(height))
-        self.logo_settings_width.setText(width)
-        self.logo_settings_height.setText(height)
-        self.logo_settings_pos_x.setText(pos_x)
-        self.logo_settings_pos_y.setText(pos_y)
+        self.logo_settings.default.setText(btn_text)
+        self.logo_settings.name.setText(name)
+        self.logo_settings.aspect_ratio.setChecked(ar)
+        self.logo_settings.original_aspect_ratio = float(int(width) / int(height))
+        self.logo_settings.width.setText(width)
+        self.logo_settings.height.setText(height)
+        self.logo_settings.pos_x.setText(pos_x)
+        self.logo_settings.pos_y.setText(pos_y)
 
     def set_logo_settings_from_image(self, name, width, height):
         """
@@ -234,13 +254,13 @@ class MainWindow(QMainWindow):
         """
         Enable all the fields for the logo settings
         """
-        self.logo_settings_default.setDisabled(not status)
-        self.logo_settings_name.setDisabled(not status)
-        self.logo_settings_aspect_ratio.setDisabled(not status)
-        self.logo_settings_width.setDisabled(not status)
-        self.logo_settings_height.setDisabled(not status)
-        self.logo_settings_pos_x.setDisabled(not status)
-        self.logo_settings_pos_y.setDisabled(not status)
+        self.logo_settings.default.setDisabled(not status)
+        self.logo_settings.name.setDisabled(not status)
+        self.logo_settings.aspect_ratio.setDisabled(not status)
+        self.logo_settings.width.setDisabled(not status)
+        self.logo_settings.height.setDisabled(not status)
+        self.logo_settings.pos_x.setDisabled(not status)
+        self.logo_settings.pos_y.setDisabled(not status)
 
     def add_logo(self, input_files):
         """
@@ -268,8 +288,6 @@ class MainWindow(QMainWindow):
         else:
             # TODO Write on Status Bar
             print("No file processed")
-
-        pass
 
     def logo_action(self, urls):
         """
@@ -321,13 +339,13 @@ class MainWindow(QMainWindow):
                 metadata.set_name(new_default_logo)
 
                 metadata.set_image_position(
-                    int(self.logo_settings_pos_x.text()),
-                    int(self.logo_settings_pos_y.text()),
+                    int(self.logo_settings.pos_x.text()),
+                    int(self.logo_settings.pos_y.text()),
                 )
                 metadata.set_image_size(
-                    self.logo_settings_aspect_ratio.isChecked(),
-                    int(self.logo_settings_width.text()),
-                    int(self.logo_settings_height.text()),
+                    self.logo_settings.aspect_ratio.isChecked(),
+                    int(self.logo_settings.width.text()),
+                    int(self.logo_settings.height.text()),
                 )
                 if not metadata.store_metadata():
                     print("Error storing metadata")
@@ -335,8 +353,8 @@ class MainWindow(QMainWindow):
             except shutil.SameFileError:
                 # TODO Show a dialog with a same name warning
                 self.enable_logo_settings(True)
-                self.logo_settings_default.setText(_("Create PDF"))
-                self.logo_settings_default.setEnabled(False)
+                self.logo_settings.default.setText(_("Create PDF"))
+                self.logo_settings.default.setEnabled(False)
             except Exception as ex:  # TODO HANDLE THIS
                 print(f"Exception 1: {type(ex).__name__}")
                 print(ex)
@@ -402,8 +420,8 @@ class MainWindow(QMainWindow):
         dlg.setWindowTitle(_("About"))
         dlg.setText(
             f'<img src="{logo_path}" width="50" height="50">'
-            f'<p style="text-align:center;"><big><b>{modules.__package_name__}</b></big></p>'
-            f'<p style="text-align:right;"><i>{_("version")}:</i> {modules.__version__}<br/>'
+            f'<p style="text-align:center;"><big><b>{__package_name__}</b></big></p>'
+            f'<p style="text-align:right;"><i>{_("version")}:</i> {__version__}<br/>'
             f'<i>{_("author")}:</i> Daniele Forti (willygroup@gmail.com)<br/>'
         )
         dlg.show()
