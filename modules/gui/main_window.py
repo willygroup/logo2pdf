@@ -386,14 +386,14 @@ class MainWindow(QMainWindow):
         settings_menu = main_menu.addMenu(_("Settings"))
         help_menu = main_menu.addMenu(_("Help"))
 
-        exitAction = QAction(
+        exit_action = QAction(
             QIcon(os.path.join("files", "images/exit.png")), _("Exit"), self
         )
-        exitAction.setShortcut("Ctrl+X")
+        exit_action.setShortcut("Ctrl+X")
 
-        exitAction.triggered.connect(self.exit_app)
+        exit_action.triggered.connect(self.exit_app)
 
-        file_menu.addAction(exitAction)
+        file_menu.addAction(exit_action)
 
         edit_settings = QAction(
             QIcon(os.path.join("files", "images/settings.png")), _("Edit"), self
@@ -401,12 +401,12 @@ class MainWindow(QMainWindow):
         settings_menu.addAction(edit_settings)
         # settings_menu.triggered.connect(self.edit_settings)
 
-        aboutAction = QAction(
+        about_action = QAction(
             QIcon(os.path.join("files", "images/info.png")), _("Info"), self
         )
 
-        aboutAction.triggered.connect(self.show_about)
-        help_menu.addAction(aboutAction)
+        about_action.triggered.connect(self.show_about)
+        help_menu.addAction(about_action)
 
     def exit_app(self):
         """
@@ -440,8 +440,8 @@ class MainWindow(QMainWindow):
         """
         Sets the App icon
         """
-        appIcon = QIcon(Paths.image("icon.png"))
-        self.setWindowIcon(appIcon)
+        app_icon = QIcon(Paths.image("icon.png"))
+        self.setWindowIcon(app_icon)
 
     def create_status_bar(self):
         """

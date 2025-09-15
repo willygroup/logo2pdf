@@ -3,13 +3,13 @@ import locale
 
 from modules.paths import Paths
 
-current_locale, _ = locale.getlocale()
-if current_locale == "Italian_Italy":
-    current_locale = "it_IT"
+CURRENT_LOCALE, _ = locale.getlocale()
+if CURRENT_LOCALE == "Italian_Italy":
+    CURRENT_LOCALE = "it_IT"
 else:
-    current_locale = "en_US"
+    CURRENT_LOCALE = "en_US"
 
 locale_path = Paths.locales
-dictionary = gettext.translation("logo2pdf", locale_path, [current_locale])
+dictionary = gettext.translation("logo2pdf", locale_path, [CURRENT_LOCALE])
 dictionary.install()
 _ = dictionary.gettext
