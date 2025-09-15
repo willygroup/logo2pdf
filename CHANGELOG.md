@@ -2,7 +2,7 @@ ChangeLog
 =========
 
 
-0.2 - unreleased
+0.2 - 20250915
 ------------------
 * General refactoring
 * Added aspect ratio to logo creation from image
@@ -19,7 +19,7 @@ Added:
 * unit tests
 
 
-0.1.0 - 13-09-2021
+0.1.0 - 20210913
 ------------------
 
 Added:
